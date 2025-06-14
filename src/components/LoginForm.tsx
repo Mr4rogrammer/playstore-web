@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,145 +62,163 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden relative">
+      {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400 to-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        {/* Floating Orbs */}
+        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-gradient-to-r from-purple-400/20 to-pink-600/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -bottom-32 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-indigo-400/20 to-blue-600/20 rounded-full mix-blend-multiply filter blur-xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       </div>
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 animate-scale-in">
-            PushNotify
-          </h1>
-          <p className="text-gray-600 text-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Forward API payloads to WhatsApp, Telegram, or Email
-          </p>
-        </div>
+      {/* Main Content */}
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Hero Section */}
+          <div className="mb-16">
+            <div className="animate-fade-in">
+              <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Forward API Payloads
+                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-scale-in" style={{ animationDelay: '0.2s' }}>
+                  Anywhere You Need
+                </span>
+              </h1>
+            </div>
+            
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              PushNotify is a micro-SaaS platform for developers and businesses to forward API payloads 
+              to WhatsApp, Telegram, or Email based on user-defined preferences.
+            </p>
+          </div>
 
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg animate-scale-in" style={{ animationDelay: '0.4s' }}>
-          <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Welcome
-            </CardTitle>
-            <CardDescription className="text-gray-600">
-              Sign in to your account or create a new one
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login" className="transition-all duration-200">Login</TabsTrigger>
-                <TabsTrigger value="register" className="transition-all duration-200">Register</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login" className="animate-fade-in">
-                <form onSubmit={handleLogin} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="transition-all duration-200 focus:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="transition-all duration-200 focus:scale-105"
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-105 shadow-lg"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Signing in...
+          {/* Login Form */}
+          <div className="w-full max-w-md mx-auto animate-scale-in" style={{ animationDelay: '0.6s' }}>
+            <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Welcome to PushNotify
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Sign in to your account or create a new one
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="login" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="login" className="transition-all duration-200">Login</TabsTrigger>
+                    <TabsTrigger value="register" className="transition-all duration-200">Register</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="login" className="animate-fade-in">
+                    <form onSubmit={handleLogin} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="transition-all duration-200 focus:scale-105"
+                        />
                       </div>
-                    ) : (
-                      'Sign In'
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="register" className="animate-fade-in">
-                <form onSubmit={handleRegister} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="Enter your full name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="transition-all duration-200 focus:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="reg-email" className="text-gray-700 font-medium">Email</Label>
-                    <Input
-                      id="reg-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="transition-all duration-200 focus:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="reg-password" className="text-gray-700 font-medium">Password</Label>
-                    <Input
-                      id="reg-password"
-                      type="password"
-                      placeholder="Choose a password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="transition-all duration-200 focus:scale-105"
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-105 shadow-lg"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Creating account...
+                      <div className="space-y-2">
+                        <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                        <Input
+                          id="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          className="transition-all duration-200 focus:scale-105"
+                        />
                       </div>
-                    ) : (
-                      'Create Account'
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-105 shadow-lg"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <div className="flex items-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Signing in...
+                          </div>
+                        ) : (
+                          'Sign In'
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="register" className="animate-fade-in">
+                    <form onSubmit={handleRegister} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                          className="transition-all duration-200 focus:scale-105"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="reg-email" className="text-gray-700 font-medium">Email</Label>
+                        <Input
+                          id="reg-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="transition-all duration-200 focus:scale-105"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="reg-password" className="text-gray-700 font-medium">Password</Label>
+                        <Input
+                          id="reg-password"
+                          type="password"
+                          placeholder="Choose a password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          className="transition-all duration-200 focus:scale-105"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-105 shadow-lg"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <div className="flex items-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Creating account...
+                          </div>
+                        ) : (
+                          'Create Account'
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
 
-        <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <p className="text-gray-500 text-sm">
-            Secure authentication powered by Firebase
-          </p>
+            <div className="text-center mt-6 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+              <p className="text-gray-500 text-sm">
+                Secure authentication powered by Firebase
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
