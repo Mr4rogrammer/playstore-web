@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ const Dashboard: React.FC = () => {
     notifications: {
       telegram: userData?.notifications?.telegram || false,
       whatsapp: userData?.notifications?.whatsapp || false,
-      email: userData?.notifications?.email || false // Added email property
+      email: userData?.notifications?.email || false
     }
   });
 
@@ -43,7 +44,7 @@ const Dashboard: React.FC = () => {
         notifications: {
           telegram: userData.notifications?.telegram || false,
           whatsapp: userData.notifications?.whatsapp || false,
-          email: userData.notifications?.email || false // Added email property
+          email: userData.notifications?.email || false
         }
       });
     }
@@ -225,7 +226,10 @@ const Dashboard: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+              Welcome back, common! 
+              <span className="text-4xl animate-bounce">👋</span>
+            </h1>
             <p className="text-gray-600">Manage your notification settings and test your setup</p>
           </div>
 
