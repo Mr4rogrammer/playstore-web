@@ -17,8 +17,7 @@ const Navigation: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/pricing', label: 'Pricing' },
     { path: '/documentation', label: 'Docs' },
-    { path: '/support', label: 'Support' },
-    { path: '/profile', label: 'Profile' }
+    { path: '/support', label: 'Support' }
   ];
 
   return (

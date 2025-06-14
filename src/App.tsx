@@ -8,7 +8,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import AuthRoute from "./components/AuthRoute";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
 import Documentation from "./pages/Documentation";
 import Support from "./pages/Support";
@@ -32,11 +31,6 @@ const App = () => (
             <Route path="/dashboard" element={
               <AuthRoute fallback={<LoginForm />}>
                 <Dashboard />
-              </AuthRoute>
-            } />
-            <Route path="/profile" element={
-              <AuthRoute fallback={<LoginForm />}>
-                <Profile />
               </AuthRoute>
             } />
             <Route path="/pricing" element={
