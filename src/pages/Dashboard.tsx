@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -233,7 +232,11 @@ const Dashboard: React.FC = () => {
         <div className="mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
             Welcome back, {userData?.name}! 
-            <span className="inline-block animate-bounce ml-2" style={{ animationDuration: '1s', transformOrigin: '70% 70%' }}>
+            <span className="inline-block text-4xl ml-3 animate-bounce" style={{ 
+              animationDuration: '1.5s',
+              animationIterationCount: 'infinite',
+              transformOrigin: '70% 70%'
+            }}>
               👋
             </span>
           </h1>
