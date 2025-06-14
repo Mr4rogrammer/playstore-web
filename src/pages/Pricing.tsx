@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
-import Navigation from '../components/Navigation';
 
 const Pricing: React.FC = () => {
-  const { userData, updateUserData } = useAuth();
-  const [loading, setLoading] = useState<string | null>(null);
-
   const plans = [
     {
       id: 'mini',
@@ -19,8 +14,8 @@ const Pricing: React.FC = () => {
       points: 100,
       costPerPoint: 0.10,
       bestFor: 'Light usage / testing',
-      features: ['100 notification points', 'Telegram support'],
-      channels: ['telegram']
+      features: ['100 notification points', 'Telegram support', 'Email support', 'Basic API access'],
+      channels: ['telegram', 'email']
     },
     {
       id: 'pro',
@@ -30,7 +25,7 @@ const Pricing: React.FC = () => {
       points: 1000,
       costPerPoint: 0.05,
       bestFor: 'Startups, developers',
-      features: ['1000 notification points', 'Telegram & Email support'],
+      features: ['1000 notification points', 'Telegram & Email support', 'Priority support', 'Advanced API features'],
       popular: true,
       channels: ['telegram', 'email']
     },
@@ -42,151 +37,35 @@ const Pricing: React.FC = () => {
       points: 5000,
       costPerPoint: 0.03,
       bestFor: 'Growing businesses / agencies',
-      features: ['5000 notification points', 'All channels supported'],
+      features: ['5000 notification points', 'All channels supported', 'Premium support', 'Custom integration help'],
       channels: ['telegram', 'email', 'whatsapp']
     }
   ];
 
-  const handlePurchase = async (plan: any) => {
-    setLoading(plan.id);
-    
-    try {
-      // Initialize Razorpay with your test key
-      const options = {
-        key: 'rzp_test_EaH3P78goZQqki', // Your actual test key
-        amount: plan.price * 100, // Amount in paise
-        currency: 'INR',
-        name: 'PushNotify',
-        description: `${plan.name} - ${plan.points} Points`,
-        handler: function (response: any) {
-          // Payment successful
-          console.log('Payment successful:', response);
-          handlePaymentSuccess(plan, response);
-        },
-        prefill: {
-          name: userData?.name || 'User',
-          email: userData?.email || '',
-        },
-        theme: {
-          color: '#3B82F6'
-        },
-        modal: {
-          ondismiss: function() {
-            console.log('Payment modal dismissed');
-            setLoading(null);
-          }
-        },
-        notes: {
-          planId: plan.id,
-          userId: userData?.uid || 'anonymous'
-        }
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', function (response: any) {
-        console.error('Payment failed:', response.error);
-        toast({
-          title: "Payment Failed",
-          description: response.error.description || "Payment could not be processed. Please try again.",
-          variant: "destructive",
-        });
-        setLoading(null);
-      });
-      
-      rzp.open();
-    } catch (error) {
-      console.error('Razorpay initialization error:', error);
-      toast({
-        title: "Payment Error",
-        description: "Failed to initialize payment. Please try again.",
-        variant: "destructive",
-      });
-      setLoading(null);
-    }
-  };
-
-  const handlePaymentSuccess = async (plan: any, paymentResponse: any) => {
-    try {
-      console.log('Processing payment success for plan:', plan.id);
-      console.log('Payment response:', paymentResponse);
-      
-      // Update user points and pack type in Firebase
-      const newPoints = (userData?.points || 0) + plan.points;
-      
-      await updateUserData({ 
-        points: newPoints,
-        packType: plan.id as 'mini' | 'pro' | 'promax',
-        lastPayment: {
-          paymentId: paymentResponse.razorpay_payment_id,
-          amount: plan.price,
-          timestamp: new Date().toISOString(),
-          plan: plan.id
-        }
-      });
-      
-      toast({
-        title: "Payment Successful! 🎉",
-        description: `${plan.points} points have been added to your account and your pack has been upgraded to ${plan.name}!`,
-      });
-      
-      setLoading(null);
-    } catch (error) {
-      console.error('Error updating user data after payment:', error);
-      toast({
-        title: "Payment Processing Error",
-        description: "Payment was successful but there was an error updating your points. Please contact support with payment ID: " + paymentResponse.razorpay_payment_id,
-        variant: "destructive",
-      });
-      setLoading(null);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400 to-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
-      </div>
-
-      <Navigation />
-      
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Choose Your Plan
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Simple, Transparent <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Pricing</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Select the perfect plan for your notification needs. Each plan includes different channel access.
+            Choose the perfect plan for your notification needs. No hidden fees, no surprises.
           </p>
-          {userData?.packType && userData.packType !== 'none' && (
-            <div className="mt-4 inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
-              Current Plan: {userData.packType.charAt(0).toUpperCase() + userData.packType.slice(1)} Pack
-            </div>
-          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
           {plans.map((plan) => (
             <Card 
               key={plan.id} 
               className={`relative transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
                 plan.popular ? 'border-blue-500 border-2 shadow-lg' : 'hover:shadow-lg'
-              } ${userData?.packType === plan.id ? 'ring-2 ring-green-500 bg-green-50' : ''}`}
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
-                  </span>
-                </div>
-              )}
-              
-              {userData?.packType === plan.id && (
-                <div className="absolute -top-4 right-4">
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                    Current
                   </span>
                 </div>
               )}
@@ -215,30 +94,23 @@ const Pricing: React.FC = () => {
                 </ul>
                 
                 <Button 
-                  onClick={() => handlePurchase(plan)}
-                  disabled={loading === plan.id || userData?.packType === plan.id}
                   className={`w-full ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
                       : ''
-                  } ${userData?.packType === plan.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  }`}
                 >
-                  {userData?.packType === plan.id 
-                    ? 'Current Plan' 
-                    : loading === plan.id 
-                      ? 'Processing...' 
-                      : `Buy ${plan.name}`
-                  }
+                  Choose {plan.name}
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
         
-        <div className="mt-12 max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader>
-              <CardTitle className="text-blue-900">Point Usage Information</CardTitle>
+              <CardTitle className="text-blue-900">How Point Usage Works</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-blue-800 mb-4">
@@ -272,8 +144,11 @@ const Pricing: React.FC = () => {
         </div>
         
         <div className="text-center mt-12">
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             All payments are secure and processed through Razorpay. Points are added instantly to your account.
+          </p>
+          <p className="text-sm text-gray-500">
+            Need a custom plan? <a href="mailto:krishnakumar.e.11022002@gmail.com" className="text-blue-600 hover:underline">Contact us</a> for enterprise solutions.
           </p>
         </div>
       </div>
