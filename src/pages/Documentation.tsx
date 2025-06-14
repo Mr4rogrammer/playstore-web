@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,10 +34,8 @@ const Documentation: React.FC = () => {
   const examplePayload = {
     "message": "Hello from your app!",
     "title": "Notification Title",
-    "data": {
-      "key1": "value1",
-      "key2": "value2"
-    }
+    "priority": "high",
+    "source": "webapp"
   };
 
   const curlExample = `curl -X POST ${webhookUrl} \\
@@ -161,7 +158,7 @@ print(response.json())`;
                 <span>Request Format</span>
               </CardTitle>
               <CardDescription className="text-lg">
-                Send JSON data to trigger notifications across your enabled channels
+                Send single-level JSON data to trigger notifications across your enabled channels
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
@@ -193,7 +190,7 @@ print(response.json())`;
                     Important Note
                   </h5>
                   <p className="text-blue-800 leading-relaxed">
-                    Send any single-level JSON data. The system automatically forwards your payload to all enabled notification channels (Email, Telegram, WhatsApp).
+                    Send any single-level JSON data (no nested objects). The system automatically forwards your payload to all enabled notification channels (Email, Telegram, WhatsApp).
                   </p>
                 </div>
               </div>
