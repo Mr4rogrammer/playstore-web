@@ -34,10 +34,13 @@ const Documentation: React.FC = () => {
   const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
 
   const examplePayload = {
-    "message": "Hello from your app!",
-    "title": "Notification Title",
-    "priority": "high",
-    "source": "webapp"
+    "title": "information data",
+    "data": {
+      "message": "Hello from your app!",
+      "title": "Notification Title",
+      "priority": "high",
+      "source": "webapp"
+    }
   };
 
   const displayAuthKey = userData?.authKey || 'YOUR_AUTH_KEY';
@@ -210,7 +213,7 @@ print(response.json())`;
                 <span>Request Format</span>
               </CardTitle>
               <CardDescription className="text-lg">
-                Send single-level JSON data to trigger notifications across your enabled channels
+                Send structured JSON data to trigger notifications across your enabled channels
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
@@ -242,7 +245,7 @@ print(response.json())`;
                     Important Note
                   </h5>
                   <p className="text-blue-800 leading-relaxed">
-                    Send any single-level JSON data (no nested objects). The system automatically forwards your payload to all enabled notification channels (Email, Telegram, WhatsApp).
+                    Send structured JSON data with a title and data object. The system automatically forwards your payload to all enabled notification channels (Email, Telegram, WhatsApp).
                   </p>
                 </div>
               </div>
