@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
     notifications: {
       telegram: userData?.notifications?.telegram || false,
       whatsapp: userData?.notifications?.whatsapp || false,
+      email: userData?.notifications?.email || false // Added email property
     }
   });
 
@@ -42,6 +43,7 @@ const Dashboard: React.FC = () => {
         notifications: {
           telegram: userData.notifications?.telegram || false,
           whatsapp: userData.notifications?.whatsapp || false,
+          email: userData.notifications?.email || false // Added email property
         }
       });
     }
