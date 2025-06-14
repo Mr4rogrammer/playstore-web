@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bell, Smartphone, MessageSquare, Zap, Shield, BarChart3, ArrowRight, Check } from 'lucide-react';
@@ -8,7 +7,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleAccessClick = () => {
-    navigate('/dashboard');
+    navigate('/login');
   };
 
   const features = [

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthRoute from "./components/AuthRoute";
 import LoginForm from "./components/LoginForm";
+import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import Documentation from "./pages/Documentation";
@@ -23,11 +24,8 @@ const App = () => (
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={
-              <AuthRoute fallback={<LoginForm />}>
-                <Dashboard />
-              </AuthRoute>
-            } />
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/dashboard" element={
               <AuthRoute fallback={<LoginForm />}>
                 <Dashboard />
