@@ -88,7 +88,7 @@ const LoginForm: React.FC = () => {
               </h1>
             </div>
             
-            <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-12 animate-fade-in text-center" style={{ animationDelay: '0.4s' }}>
               PushNotify is a micro-SaaS platform for developers and businesses to forward API payloads 
               to WhatsApp, Telegram, or Email based on user-defined preferences.
             </p>
@@ -101,7 +101,7 @@ const LoginForm: React.FC = () => {
                 <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Welcome to PushNotify
                 </CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardDescription className="text-gray-600 text-center">
                   Sign in to your account or create a new one
                 </CardDescription>
               </CardHeader>
@@ -114,8 +114,8 @@ const LoginForm: React.FC = () => {
                   
                   <TabsContent value="login" className="animate-fade-in">
                     <form onSubmit={handleLogin} className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+                      <div className="space-y-2 text-center">
+                        <Label htmlFor="email" className="text-gray-700 font-medium block">Email</Label>
                         <Input
                           id="email"
                           type="email"
@@ -123,11 +123,11 @@ const LoginForm: React.FC = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
-                          className="transition-all duration-200 focus:scale-105"
+                          className="transition-all duration-200 focus:scale-105 text-center"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                      <div className="space-y-2 text-center">
+                        <Label htmlFor="password" className="text-gray-700 font-medium block">Password</Label>
                         <Input
                           id="password"
                           type="password"
@@ -135,7 +135,7 @@ const LoginForm: React.FC = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="transition-all duration-200 focus:scale-105"
+                          className="transition-all duration-200 focus:scale-105 text-center"
                         />
                       </div>
                       <Button 
@@ -144,7 +144,7 @@ const LoginForm: React.FC = () => {
                         disabled={loading}
                       >
                         {loading ? (
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-center">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                             Signing in...
                           </div>
@@ -157,8 +157,8 @@ const LoginForm: React.FC = () => {
                   
                   <TabsContent value="register" className="animate-fade-in">
                     <form onSubmit={handleRegister} className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
+                      <div className="space-y-2 text-center">
+                        <Label htmlFor="name" className="text-gray-700 font-medium block">Full Name</Label>
                         <Input
                           id="name"
                           type="text"
@@ -166,11 +166,11 @@ const LoginForm: React.FC = () => {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           required
-                          className="transition-all duration-200 focus:scale-105"
+                          className="transition-all duration-200 focus:scale-105 text-center"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="reg-email" className="text-gray-700 font-medium">Email</Label>
+                      <div className="space-y-2 text-center">
+                        <Label htmlFor="reg-email" className="text-gray-700 font-medium block">Email</Label>
                         <Input
                           id="reg-email"
                           type="email"
@@ -178,11 +178,11 @@ const LoginForm: React.FC = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
-                          className="transition-all duration-200 focus:scale-105"
+                          className="transition-all duration-200 focus:scale-105 text-center"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="reg-password" className="text-gray-700 font-medium">Password</Label>
+                      <div className="space-y-2 text-center">
+                        <Label htmlFor="reg-password" className="text-gray-700 font-medium block">Password</Label>
                         <Input
                           id="reg-password"
                           type="password"
@@ -190,7 +190,7 @@ const LoginForm: React.FC = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="transition-all duration-200 focus:scale-105"
+                          className="transition-all duration-200 focus:scale-105 text-center"
                         />
                       </div>
                       <Button 
@@ -199,7 +199,7 @@ const LoginForm: React.FC = () => {
                         disabled={loading}
                       >
                         {loading ? (
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-center">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                             Creating account...
                           </div>
