@@ -1,7 +1,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MessageSquare, Send, Zap, ArrowRight, Sparkles } from 'lucide-react';
+import { MessageSquare, Send, Mail, ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
@@ -15,19 +15,19 @@ const Index = () => {
     {
       icon: MessageSquare,
       title: "WhatsApp Integration",
-      description: "Send messages directly to WhatsApp chats via webhook",
+      description: "Forward API payloads directly to WhatsApp chats",
       color: "from-green-500 to-green-600"
     },
     {
       icon: Send,
       title: "Telegram Support",
-      description: "Instant delivery to Telegram channels and groups",
+      description: "Route payloads to Telegram channels and groups",
       color: "from-blue-500 to-blue-600"
     },
     {
-      icon: Zap,
-      title: "Email Notifications",
-      description: "Reliable email delivery with webhook triggers",
+      icon: Mail,
+      title: "Email Forwarding",
+      description: "Send API data to email addresses instantly",
       color: "from-purple-500 to-purple-600"
     }
   ];
@@ -52,62 +52,46 @@ const Index = () => {
           <Send className="w-8 h-8 text-blue-500/40" />
         </div>
         <div className="absolute bottom-1/3 left-1/3 animate-bounce" style={{ animationDelay: '3s', animationDuration: '5s' }}>
-          <Zap className="w-8 h-8 text-purple-500/40" />
+          <Mail className="w-8 h-8 text-purple-500/40" />
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-10 bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-2 animate-fade-in">
-              <Sparkles className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                PushNotify
-              </h1>
-            </div>
-            <Button 
-              onClick={handleAccessClick} 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform transition-all duration-300 hover:scale-105 shadow-lg animate-fade-in"
-              style={{ animationDelay: '0.5s' }}
-            >
-              Access Dashboard
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </nav>
-
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto text-center">
           {/* Hero Section */}
           <div className="mb-16">
-            <div className="animate-fade-in">
-              <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-                Powerful Push Notifications
-                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-scale-in" style={{ animationDelay: '0.5s' }}>
-                  Made Simple
-                </span>
+            <div className="animate-fade-in flex items-center justify-center space-x-3 mb-8">
+              <Sparkles className="w-12 h-12 text-blue-600" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                PushNotify
               </h1>
             </div>
             
-            <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-8 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-              Engage your users with lightning-fast push notifications across all platforms (WhatsApp chat, 
-              Telegram chat and email). Simple integration, powerful features, and reliable delivery guaranteed.
-            </p>
+            <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+                Forward API Payloads
+                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-scale-in" style={{ animationDelay: '0.5s' }}>
+                  Anywhere You Need
+                </span>
+              </h2>
+            </div>
             
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-2xl p-8 max-w-4xl mx-auto mb-12 backdrop-blur-sm shadow-lg animate-scale-in" style={{ animationDelay: '0.9s' }}>
-              <div className="flex items-center justify-center mb-4">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-2 rounded-lg">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">How It Works</h3>
-              <p className="text-slate-700 text-lg leading-relaxed">
-                When customers post data to your webhook, the body will be parsed and automatically sent to social media chat 
-                platforms like Telegram, WhatsApp, and email notifications.
-              </p>
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+              PushNotify is a micro-SaaS platform for developers and businesses to forward API payloads 
+              to WhatsApp, Telegram, or Email based on user-defined preferences.
+            </p>
+
+            {/* Centered Access Button */}
+            <div className="mb-16 animate-scale-in" style={{ animationDelay: '0.9s' }}>
+              <Button 
+                onClick={handleAccessClick} 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-xl px-16 py-6 rounded-2xl transform transition-all duration-300 hover:scale-105 shadow-2xl hover:shadow-3xl"
+              >
+                Access Dashboard
+                <ArrowRight className="w-6 h-6 ml-3" />
+              </Button>
             </div>
           </div>
 
@@ -136,23 +120,19 @@ const Index = () => {
             ))}
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '2s' }}>
-            <Button 
-              onClick={handleAccessClick} 
-              size="lg" 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-12 py-4 rounded-xl transform transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl"
-            >
-              Get Started Free
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="text-lg px-12 py-4 rounded-xl border-2 border-slate-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 hover:scale-105 shadow-lg"
-            >
-              View Documentation
-            </Button>
+          {/* How It Works Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-3xl p-12 max-w-5xl mx-auto backdrop-blur-sm shadow-xl animate-scale-in" style={{ animationDelay: '2s' }}>
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-3 rounded-xl">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-slate-800 mb-6">How It Works</h3>
+            <p className="text-slate-700 text-xl leading-relaxed">
+              Configure your preferences once, and PushNotify automatically routes your API payloads 
+              to the right destinations - whether that's WhatsApp for instant alerts, Telegram for team notifications, 
+              or email for formal communications.
+            </p>
           </div>
         </div>
       </div>
