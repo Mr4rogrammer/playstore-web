@@ -78,8 +78,9 @@ const Dashboard: React.FC = () => {
       });
       
       toast({
-        title: "Preferences saved successfully!",
+        title: "Settings saved successfully! ✅",
         description: `Your ${field === 'phone' ? 'WhatsApp' : 'Telegram'} settings have been updated.`,
+        variant: "success",
       });
     } catch (error: any) {
       toast({
@@ -96,9 +97,9 @@ const Dashboard: React.FC = () => {
     // Check if channel is available in current plan
     if (!availableChannels.includes(channel)) {
       toast({
-        title: "Channel not available",
+        title: "Channel not available ⚠️",
         description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} is not available in your current plan. Please upgrade to access this channel.`,
-        variant: "destructive",
+        variant: "warning",
       });
       return;
     }
@@ -128,8 +129,9 @@ const Dashboard: React.FC = () => {
       });
       
       toast({
-        title: "Notification setting updated",
+        title: `${newValue ? '🎉 Channel enabled!' : 'Channel disabled'}`,
         description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.`,
+        variant: newValue ? "success" : "info",
       });
     } catch (error: any) {
       // Revert the change if update fails
@@ -157,8 +159,9 @@ const Dashboard: React.FC = () => {
         setTimeout(() => setAuthKeyCopied(false), 2000);
       }
       toast({
-        title: "Copied to clipboard!",
+        title: "📋 Copied to clipboard!",
         description: `${type === 'webhook' ? 'Webhook URL' : 'Auth Key'} has been copied successfully.`,
+        variant: "success",
       });
     } catch (error) {
       toast({
@@ -173,8 +176,9 @@ const Dashboard: React.FC = () => {
     try {
       await regenerateAuthKey();
       toast({
-        title: "Auth Key regenerated!",
+        title: "🔄 Auth Key regenerated!",
         description: "Your new auth key has been generated successfully.",
+        variant: "success",
       });
     } catch (error) {
       toast({
