@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -498,12 +497,12 @@ const Dashboard: React.FC = () => {
                 />
               </div>
               
-              {/* Always show Telegram Chat ID input when telegram is available */}
-              {availableChannels.includes('telegram') && (
+              {/* Show Telegram Chat ID input only when telegram is enabled */}
+              {formData.notifications.telegram && availableChannels.includes('telegram') && (
                 <div className="ml-4 p-5 bg-white rounded-xl border-2 border-blue-200 shadow-sm">
                   <div className="space-y-4">
                     <Label htmlFor="telegram" className="text-sm font-semibold text-gray-700">
-                      Telegram Chat ID {formData.notifications.telegram ? '*' : '(required to enable notifications)'}
+                      Telegram Chat ID *
                     </Label>
                     <div className="flex space-x-3">
                       <Input
@@ -513,7 +512,7 @@ const Dashboard: React.FC = () => {
                         value={formData.telegramChatId}
                         onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
                         className="flex-1 border-2 focus:border-blue-400 transition-colors"
-                        required={formData.notifications.telegram}
+                        required
                       />
                       <Button 
                         onClick={() => handleSave('telegramChatId')} 
@@ -524,11 +523,6 @@ const Dashboard: React.FC = () => {
                         {telegramLoading ? 'Saving...' : 'Save'}
                       </Button>
                     </div>
-                    {!formData.notifications.telegram && formData.telegramChatId && (
-                      <p className="text-sm text-green-600 font-medium">
-                        ✅ Chat ID saved! You can now enable Telegram notifications.
-                      </p>
-                    )}
                   </div>
                 </div>
               )}
