@@ -12,7 +12,8 @@ import BlockedAccount from '../components/BlockedAccount';
 
 const Dashboard: React.FC = () => {
   const { userData, updateUserData, regenerateAuthKey } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [whatsappLoading, setWhatsappLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [authKeyCopied, setAuthKeyCopied] = useState(false);
   const [showAuthKey, setShowAuthKey] = useState(false);
@@ -69,7 +70,11 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSave = async (field: 'phone' | 'telegramChatId') => {
-    setLoading(true);
+    if (field === 'telegramChatId') {
+      setTelegramLoading(true);
+    } else {
+      setWhatsappLoading(true);
+    }
     
     try {
       await updateUserData({
@@ -90,7 +95,11 @@ const Dashboard: React.FC = () => {
       });
     }
     
-    setLoading(false);
+    if (field === 'telegramChatId') {
+      setTelegramLoading(false);
+    } else {
+      setWhatsappLoading(false);
+    }
   };
 
   const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
@@ -495,10 +504,10 @@ const Dashboard: React.FC = () => {
                       <Button 
                         onClick={() => handleSave('telegramChatId')} 
                         size="sm"
-                        disabled={loading || !formData.telegramChatId.trim()}
+                        disabled={telegramLoading || !formData.telegramChatId.trim()}
                         className="bg-blue-600 hover:bg-blue-700 font-medium px-6"
                       >
-                        {loading ? 'Saving...' : 'Save'}
+                        {telegramLoading ? 'Saving...' : 'Save'}
                       </Button>
                     </div>
                   </div>
@@ -559,10 +568,10 @@ const Dashboard: React.FC = () => {
                       <Button 
                         onClick={() => handleSave('phone')} 
                         size="sm"
-                        disabled={loading || !formData.phone.trim()}
+                        disabled={whatsappLoading || !formData.phone.trim()}
                         className="bg-green-600 hover:bg-green-700 font-medium px-6"
                       >
-                        {loading ? 'Saving...' : 'Save'}
+                        {whatsappLoading ? 'Saving...' : 'Save'}
                       </Button>
                     </div>
                   </div>
