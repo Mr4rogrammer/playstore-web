@@ -15,7 +15,7 @@ const Navigation: React.FC = () => {
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard' },
-    { path: '/profile', label: 'Profile' },
+    { path: '/pricing', label: 'Pricing' },
   ];
 
   return (

@@ -9,6 +9,7 @@ import AuthRoute from "./components/AuthRoute";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,11 @@ const App = () => (
             <Route path="/profile" element={
               <AuthRoute fallback={<LoginForm />}>
                 <Profile />
+              </AuthRoute>
+            } />
+            <Route path="/pricing" element={
+              <AuthRoute fallback={<LoginForm />}>
+                <Pricing />
               </AuthRoute>
             } />
             <Route path="*" element={<NotFound />} />
