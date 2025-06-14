@@ -20,7 +20,7 @@ const Pricing: React.FC = () => {
       points: 100,
       costPerPoint: 0.10,
       bestFor: 'Light usage / testing',
-      features: ['100 notification points', 'Telegram support only', 'Basic webhook support'],
+      features: ['100 notification points', 'Telegram support'],
       channels: ['telegram']
     },
     {
@@ -31,7 +31,7 @@ const Pricing: React.FC = () => {
       points: 1000,
       costPerPoint: 0.05,
       bestFor: 'Startups, developers',
-      features: ['1000 notification points', 'Telegram & Email support', 'Priority webhook support', 'Email support'],
+      features: ['1000 notification points', 'Telegram & Email support'],
       popular: true,
       channels: ['telegram', 'email']
     },
@@ -43,8 +43,8 @@ const Pricing: React.FC = () => {
       points: 5000,
       costPerPoint: 0.03,
       bestFor: 'Growing businesses / agencies',
-      features: ['5000 notification points', 'All channels supported', 'Premium webhook support', 'Priority email support', 'Custom integrations'],
-      channels: ['whatsapp', 'telegram', 'email']
+      features: ['5000 notification points', 'All channels supported'],
+      channels: ['telegram', 'email', 'whatsapp']
     }
   ];
 
@@ -207,6 +207,42 @@ const Pricing: React.FC = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        <div className="mt-12 max-w-4xl mx-auto">
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="text-blue-900">Point Usage Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-blue-800 mb-4">
+                Each notification uses points per webhook call. Points are deducted based on enabled channels:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="bg-white p-4 rounded-lg">
+                  <div className="text-2xl mb-2">✈️</div>
+                  <div className="font-medium">Telegram</div>
+                  <div className="text-blue-600 font-bold">1 point</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg">
+                  <div className="text-2xl mb-2">📧</div>
+                  <div className="font-medium">Email</div>
+                  <div className="text-blue-600 font-bold">2 points</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg">
+                  <div className="text-2xl mb-2">📱</div>
+                  <div className="font-medium">WhatsApp</div>
+                  <div className="text-blue-600 font-bold">2 points</div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Example:</strong> If all 3 channels are enabled, each webhook call uses 5 points (1+2+2). 
+                  If only Telegram is enabled, each call uses 1 point.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
         
         <div className="text-center mt-12">

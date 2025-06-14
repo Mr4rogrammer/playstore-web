@@ -10,6 +10,8 @@ import LoginForm from "./components/LoginForm";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
+import Documentation from "./pages/Documentation";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +42,16 @@ const App = () => (
             <Route path="/pricing" element={
               <AuthRoute fallback={<LoginForm />}>
                 <Pricing />
+              </AuthRoute>
+            } />
+            <Route path="/documentation" element={
+              <AuthRoute fallback={<LoginForm />}>
+                <Documentation />
+              </AuthRoute>
+            } />
+            <Route path="/support" element={
+              <AuthRoute fallback={<LoginForm />}>
+                <Support />
               </AuthRoute>
             } />
             <Route path="*" element={<NotFound />} />

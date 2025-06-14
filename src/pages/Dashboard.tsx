@@ -8,6 +8,7 @@ import { Copy, Check, Eye, EyeOff, RefreshCw, Lock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
+import BlockedAccount from '../components/BlockedAccount';
 
 const Dashboard: React.FC = () => {
   const { userData, updateUserData, regenerateAuthKey } = useAuth();
@@ -19,11 +20,16 @@ const Dashboard: React.FC = () => {
     phone: userData?.phone || '',
     telegramChatId: userData?.telegramChatId || '',
     notifications: {
-      whatsapp: userData?.notifications?.whatsapp || false,
-      telegram: userData?.notifications?.telegram || false,
       email: userData?.notifications?.email || false,
+      telegram: userData?.notifications?.telegram || false,
+      whatsapp: userData?.notifications?.whatsapp || false,
     }
   });
+
+  // Show blocked account screen if user is blocked
+  if (userData?.status === 'blocked') {
+    return <BlockedAccount />;
+  }
 
   const webhookUrl = "https://n8n.mrprogrammer.info/webhook/sample";
 
@@ -45,7 +51,31 @@ const Dashboard: React.FC = () => {
 
   const availableChannels = getAvailableChannels();
 
+  const validateInputs = () => {
+    if (formData.notifications.telegram && !formData.telegramChatId.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter your Telegram Chat ID before enabling Telegram notifications.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.notifications.whatsapp && !formData.phone.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter your phone number before enabling WhatsApp notifications.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = async (field: 'phone' | 'telegramChatId') => {
+    if (!validateInputs()) return;
+    
     setLoading(true);
     
     try {
@@ -58,10 +88,10 @@ const Dashboard: React.FC = () => {
         title: "Preferences saved successfully!",
         description: `Your ${field === 'phone' ? 'WhatsApp' : 'Telegram'} settings have been updated.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error saving preferences",
-        description: "Please try again later.",
+        description: error.message,
         variant: "destructive",
       });
     }
@@ -89,6 +119,15 @@ const Dashboard: React.FC = () => {
       notifications: newNotifications
     }));
 
+    if (!validateInputs()) {
+      // Revert the change if validation fails
+      setFormData(prev => ({
+        ...prev,
+        notifications: formData.notifications
+      }));
+      return;
+    }
+
     try {
       await updateUserData({
         notifications: newNotifications
@@ -98,12 +137,17 @@ const Dashboard: React.FC = () => {
         title: "Notification setting updated",
         description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newNotifications[channel] ? 'enabled' : 'disabled'}.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error updating setting",
-        description: "Please try again later.",
+        description: error.message,
         variant: "destructive",
       });
+      // Revert the change if update fails
+      setFormData(prev => ({
+        ...prev,
+        notifications: formData.notifications
+      }));
     }
   };
 
@@ -319,7 +363,96 @@ const Dashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* WhatsApp Section */}
+            {/* Email Section - First */}
+            <div className="space-y-4">
+              <div className={`flex items-center justify-between p-4 rounded-lg ${
+                availableChannels.includes('email') ? 'bg-purple-50' : 'bg-gray-100'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <div className="text-2xl">📧</div>
+                  <div>
+                    <div className="font-medium flex items-center gap-2">
+                      Email
+                      {!availableChannels.includes('email') && (
+                        <Lock className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {availableChannels.includes('email') 
+                        ? `Receive notifications via Email (${userData?.email})` 
+                        : 'Available in Pro and Pro Max packs'
+                      }
+                    </div>
+                  </div>
+                </div>
+                <Switch
+                  checked={formData.notifications.email}
+                  onCheckedChange={() => handleNotificationToggle('email')}
+                  disabled={!availableChannels.includes('email')}
+                />
+              </div>
+            </div>
+
+            {/* Telegram Section - Second */}
+            <div className="space-y-4">
+              <div className={`flex items-center justify-between p-4 rounded-lg ${
+                availableChannels.includes('telegram') ? 'bg-blue-50' : 'bg-gray-100'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <div className="text-2xl">✈️</div>
+                  <div>
+                    <div className="font-medium flex items-center gap-2">
+                      Telegram
+                      {!availableChannels.includes('telegram') && (
+                        <Lock className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {availableChannels.includes('telegram') 
+                        ? 'Receive notifications via Telegram' 
+                        : 'Available in all plans'
+                      }
+                    </div>
+                  </div>
+                </div>
+                <Switch
+                  checked={formData.notifications.telegram}
+                  onCheckedChange={() => handleNotificationToggle('telegram')}
+                  disabled={!availableChannels.includes('telegram')}
+                />
+              </div>
+              
+              {formData.notifications.telegram && availableChannels.includes('telegram') && (
+                <div className="ml-4 p-4 bg-white rounded-lg border border-blue-200 animate-fade-in">
+                  <div className="space-y-3">
+                    <Label htmlFor="telegram" className="text-sm font-medium">
+                      Telegram Chat ID *
+                    </Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="telegram"
+                        type="text"
+                        placeholder="Enter your Telegram Chat ID"
+                        value={formData.telegramChatId}
+                        onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
+                        className="flex-1"
+                        required
+                      />
+                      <Button 
+                        onClick={() => handleSave('telegramChatId')} 
+                        size="sm"
+                        disabled={loading || !formData.telegramChatId.trim()}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {loading ? 'Saving...' : 'Save'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* WhatsApp Section - Third */}
             <div className="space-y-4">
               <div className={`flex items-center justify-between p-4 rounded-lg ${
                 availableChannels.includes('whatsapp') ? 'bg-green-50' : 'bg-gray-100'
@@ -352,7 +485,7 @@ const Dashboard: React.FC = () => {
                 <div className="ml-4 p-4 bg-white rounded-lg border border-green-200 animate-fade-in">
                   <div className="space-y-3">
                     <Label htmlFor="phone" className="text-sm font-medium">
-                      Phone Number (with country code)
+                      Phone Number (with country code) *
                     </Label>
                     <div className="flex space-x-2">
                       <Input
@@ -362,11 +495,12 @@ const Dashboard: React.FC = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                         className="flex-1"
+                        required
                       />
                       <Button 
                         onClick={() => handleSave('phone')} 
                         size="sm"
-                        disabled={loading}
+                        disabled={loading || !formData.phone.trim()}
                         className="bg-green-600 hover:bg-green-700"
                       >
                         {loading ? 'Saving...' : 'Save'}
@@ -375,92 +509,6 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Telegram Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-4 rounded-lg ${
-                availableChannels.includes('telegram') ? 'bg-blue-50' : 'bg-gray-100'
-              }`}>
-                <div className="flex items-center space-x-3">
-                  <div className="text-2xl">✈️</div>
-                  <div>
-                    <div className="font-medium flex items-center gap-2">
-                      Telegram
-                      {!availableChannels.includes('telegram') && (
-                        <Lock className="w-4 h-4 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {availableChannels.includes('telegram') 
-                        ? 'Receive notifications via Telegram' 
-                        : 'Available in all paid plans'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.telegram}
-                  onCheckedChange={() => handleNotificationToggle('telegram')}
-                  disabled={!availableChannels.includes('telegram')}
-                />
-              </div>
-              
-              {formData.notifications.telegram && availableChannels.includes('telegram') && (
-                <div className="ml-4 p-4 bg-white rounded-lg border border-blue-200 animate-fade-in">
-                  <div className="space-y-3">
-                    <Label htmlFor="telegram" className="text-sm font-medium">
-                      Telegram Chat ID
-                    </Label>
-                    <div className="flex space-x-2">
-                      <Input
-                        id="telegram"
-                        type="text"
-                        placeholder="Enter your Telegram Chat ID"
-                        value={formData.telegramChatId}
-                        onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
-                        className="flex-1"
-                      />
-                      <Button 
-                        onClick={() => handleSave('telegramChatId')} 
-                        size="sm"
-                        disabled={loading}
-                        className="bg-blue-600 hover:bg-blue-700"
-                      >
-                        {loading ? 'Saving...' : 'Save'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Email Section */}
-            <div className={`flex items-center justify-between p-4 rounded-lg ${
-              availableChannels.includes('email') ? 'bg-purple-50' : 'bg-gray-100'
-            }`}>
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl">📧</div>
-                <div>
-                  <div className="font-medium flex items-center gap-2">
-                    Email
-                    {!availableChannels.includes('email') && (
-                      <Lock className="w-4 h-4 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {availableChannels.includes('email') 
-                      ? `Receive notifications via Email (${userData?.email})` 
-                      : 'Available in Pro and Pro Max packs'
-                    }
-                  </div>
-                </div>
-              </div>
-              <Switch
-                checked={formData.notifications.email}
-                onCheckedChange={() => handleNotificationToggle('email')}
-                disabled={!availableChannels.includes('email')}
-              />
             </div>
 
             {(userData?.packType === 'none' || !userData?.packType) && (
