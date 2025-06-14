@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,34 +51,51 @@ const Pricing: React.FC = () => {
     setLoading(plan.id);
     
     try {
-      // Initialize Razorpay
+      // Initialize Razorpay with your test key
       const options = {
-        key: 'rzp_test_9999999999', // Replace with your Razorpay key
+        key: 'rzp_test_EaH3P78goZQqki', // Your actual test key
         amount: plan.price * 100, // Amount in paise
         currency: 'INR',
         name: 'PushNotify',
         description: `${plan.name} - ${plan.points} Points`,
         handler: function (response: any) {
           // Payment successful
+          console.log('Payment successful:', response);
           handlePaymentSuccess(plan, response);
         },
         prefill: {
-          name: userData?.name,
-          email: userData?.email,
+          name: userData?.name || 'User',
+          email: userData?.email || '',
         },
         theme: {
           color: '#3B82F6'
         },
         modal: {
           ondismiss: function() {
+            console.log('Payment modal dismissed');
             setLoading(null);
           }
+        },
+        notes: {
+          planId: plan.id,
+          userId: userData?.uid || 'anonymous'
         }
       };
 
       const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        console.error('Payment failed:', response.error);
+        toast({
+          title: "Payment Failed",
+          description: response.error.description || "Payment could not be processed. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(null);
+      });
+      
       rzp.open();
     } catch (error) {
+      console.error('Razorpay initialization error:', error);
       toast({
         title: "Payment Error",
         description: "Failed to initialize payment. Please try again.",
@@ -91,24 +107,34 @@ const Pricing: React.FC = () => {
 
   const handlePaymentSuccess = async (plan: any, paymentResponse: any) => {
     try {
+      console.log('Processing payment success for plan:', plan.id);
+      console.log('Payment response:', paymentResponse);
+      
       // Update user points and pack type in Firebase
       const newPoints = (userData?.points || 0) + plan.points;
       
       await updateUserData({ 
         points: newPoints,
-        packType: plan.id as 'mini' | 'pro' | 'promax'
+        packType: plan.id as 'mini' | 'pro' | 'promax',
+        lastPayment: {
+          paymentId: paymentResponse.razorpay_payment_id,
+          amount: plan.price,
+          timestamp: new Date().toISOString(),
+          plan: plan.id
+        }
       });
       
       toast({
         title: "Payment Successful! 🎉",
-        description: `${plan.points} points have been added to your account and your pack has been upgraded!`,
+        description: `${plan.points} points have been added to your account and your pack has been upgraded to ${plan.name}!`,
       });
       
       setLoading(null);
     } catch (error) {
+      console.error('Error updating user data after payment:', error);
       toast({
         title: "Payment Processing Error",
-        description: "Payment was successful but there was an error updating your points. Please contact support.",
+        description: "Payment was successful but there was an error updating your points. Please contact support with payment ID: " + paymentResponse.razorpay_payment_id,
         variant: "destructive",
       });
       setLoading(null);
