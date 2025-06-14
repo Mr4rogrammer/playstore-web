@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
     return <BlockedAccount />;
   }
 
-  const webhookUrl = "https://n8n.mrprogrammer.info/webhook/sample";
+  const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
 
   // Determine available channels based on pack type
   const getAvailableChannels = () => {

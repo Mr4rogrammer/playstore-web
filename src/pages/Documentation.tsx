@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,7 @@ const Documentation: React.FC = () => {
     }
   };
 
-  const webhookUrl = "https://n8n.mrprogrammer.info/webhook/sample";
+  const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
 
   const examplePayload = {
     "message": "Hello from your app!",
