@@ -21,6 +21,7 @@ interface UserData {
     email: boolean;
   };
   points: number;
+  authKey: string;
 }
 
 interface AuthContextType {
@@ -31,6 +32,7 @@ interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUserData: (data: Partial<UserData>) => Promise<void>;
+  regenerateAuthKey: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +43,10 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+};
+
+const generateAuthKey = () => {
+  return 'pk_' + Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('');
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,7 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         telegram: false,
         email: true
       },
-      points: 10
+      points: 10,
+      authKey: generateAuthKey()
     };
     
     await setDoc(doc(db, 'users', userCredential.user.uid), newUserData);
@@ -100,6 +107,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserData(updatedData as UserData);
   };
 
+  const regenerateAuthKey = async () => {
+    if (!user) return;
+    
+    const newAuthKey = generateAuthKey();
+    const updatedData = { ...userData, authKey: newAuthKey };
+    await setDoc(doc(db, 'users', user.uid), updatedData, { merge: true });
+    setUserData(updatedData as UserData);
+  };
+
   const value = {
     user,
     userData,
@@ -107,7 +123,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    updateUserData
+    updateUserData,
+    regenerateAuthKey
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
