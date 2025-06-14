@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +14,7 @@ const LoginForm: React.FC = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const LoginForm: React.FC = () => {
         title: "Welcome back!",
         description: "Successfully logged in to PushNotify.",
       });
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         title: "Login failed",
@@ -46,6 +48,7 @@ const LoginForm: React.FC = () => {
         title: "Account created!",
         description: "Welcome to PushNotify! You've received 10 free points.",
       });
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         title: "Registration failed",
