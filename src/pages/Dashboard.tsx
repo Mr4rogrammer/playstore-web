@@ -54,6 +54,7 @@ const Dashboard: React.FC = () => {
   const validateChannelRequirements = (channel: keyof typeof formData.notifications, enableValue: boolean) => {
     if (!enableValue) return true; // No validation needed when disabling
     
+    // Only validate Telegram Chat ID requirement when enabling
     if (channel === 'telegram' && !formData.telegramChatId.trim()) {
       toast({
         title: "Validation Error",
@@ -63,15 +64,7 @@ const Dashboard: React.FC = () => {
       return false;
     }
 
-    if (channel === 'whatsapp' && !formData.phone.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter your phone number before enabling WhatsApp notifications.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
+    // For WhatsApp, allow enabling without phone number - user will add it after enabling
     return true;
   };
 
