@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Copy, Check, Eye, EyeOff, RefreshCw, Lock, Zap, Crown, Shield } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
-import Navigation from '../components/Navigation';
-import BlockedAccount from '../components/BlockedAccount';
+import { Separator } from '@/components/ui/separator';
+import { Copy, Eye, EyeOff, RefreshCw, Send, Bell, MessageSquare, Phone } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard: React.FC = () => {
   const { userData, updateUserData, regenerateAuthKey } = useAuth();
@@ -17,56 +16,82 @@ const Dashboard: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [authKeyCopied, setAuthKeyCopied] = useState(false);
   const [showAuthKey, setShowAuthKey] = useState(false);
+  const { toast } = useToast();
+
   const [formData, setFormData] = useState({
     phone: userData?.phone || '',
     telegramChatId: userData?.telegramChatId || '',
     notifications: {
-      email: userData?.notifications?.email || false,
       telegram: userData?.notifications?.telegram || false,
       whatsapp: userData?.notifications?.whatsapp || false,
     }
   });
 
-  // Show blocked account screen if user is blocked
-  if (userData?.status === 'blocked') {
-    return <BlockedAccount />;
-  }
+  const [testNotification, setTestNotification] = useState({
+    message: '',
+    title: '',
+    priority: 'medium',
+    source: 'webapp'
+  });
 
-  const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
-
-  // Determine available channels based on pack type
-  const getAvailableChannels = () => {
-    const packType = userData?.packType || 'none';
-    switch (packType) {
-      case 'mini':
-        return ['telegram'];
-      case 'pro':
-        return ['telegram', 'email'];
-      case 'promax':
-        return ['telegram', 'email', 'whatsapp'];
-      case 'none':
-      default:
-        return ['telegram']; // Telegram is available for free/none pack users
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        phone: userData.phone || '',
+        telegramChatId: userData.telegramChatId || '',
+        notifications: {
+          telegram: userData.notifications?.telegram || false,
+          whatsapp: userData.notifications?.whatsapp || false,
+        }
+      });
     }
-  };
+  }, [userData]);
 
-  const availableChannels = getAvailableChannels();
-
-  const validateChannelRequirements = (channel: keyof typeof formData.notifications, enableValue: boolean) => {
-    if (!enableValue) return true; // No validation needed when disabling
-    
-    // Only validate Telegram Chat ID requirement when enabling
-    if (channel === 'telegram' && !formData.telegramChatId.trim()) {
+  const handleSendNotification = async () => {
+    if (!testNotification.message || !testNotification.title) {
       toast({
-        title: "Validation Error",
-        description: "Please enter your Telegram Chat ID before enabling Telegram notifications.",
+        title: "Error",
+        description: "Please fill in both message and title fields",
         variant: "destructive",
       });
-      return false;
+      return;
     }
 
-    // For WhatsApp, allow enabling without phone number - user will add it after enabling
-    return true;
+    try {
+      // Restructure the payload according to the new format
+      const payload = {
+        title: "information data",
+        data: {
+          message: testNotification.message,
+          title: testNotification.title,
+          priority: testNotification.priority,
+          source: testNotification.source
+        }
+      };
+
+      console.log('Sending notification with payload:', payload);
+      
+      toast({
+        title: "Notification Sent",
+        description: "Test notification has been sent successfully",
+        variant: "success",
+      });
+
+      // Clear the form
+      setTestNotification({
+        message: '',
+        title: '',
+        priority: 'medium',
+        source: 'webapp'
+      });
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send notification",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSave = async (field: 'phone' | 'telegramChatId') => {
@@ -78,19 +103,19 @@ const Dashboard: React.FC = () => {
     
     try {
       await updateUserData({
-        [field]: formData[field],
-        notifications: formData.notifications
+        [field]: formData[field]
       });
       
       toast({
-        title: "Settings saved successfully! ✅",
-        description: `Your ${field === 'phone' ? 'WhatsApp' : 'Telegram'} settings have been updated.`,
+        title: "Success",
+        description: `${field === 'phone' ? 'WhatsApp' : 'Telegram'} settings saved successfully`,
         variant: "success",
       });
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Error saving data:', error);
       toast({
-        title: "Error saving preferences",
-        description: error.message,
+        title: "Error",
+        description: "Failed to save settings",
         variant: "destructive",
       });
     }
@@ -103,79 +128,60 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
-    // Check if channel is available in current plan
-    if (!availableChannels.includes(channel)) {
-      toast({
-        title: "Channel not available ⚠️",
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} is not available in your current plan. Please upgrade to access this channel.`,
-        variant: "warning",
-      });
-      return;
-    }
-
     const newValue = !formData.notifications[channel];
     
-    // Validate requirements before enabling
-    if (!validateChannelRequirements(channel, newValue)) {
-      return; // Don't change state if validation fails
-    }
-
-    const newNotifications = {
-      ...formData.notifications,
-      [channel]: newValue
-    };
-    
-    // Update local state first
     setFormData(prev => ({
       ...prev,
-      notifications: newNotifications
+      notifications: {
+        ...prev.notifications,
+        [channel]: newValue
+      }
     }));
 
     try {
-      // Update in database
       await updateUserData({
-        notifications: newNotifications
+        notifications: {
+          ...formData.notifications,
+          [channel]: newValue
+        }
       });
       
       toast({
-        title: `${newValue ? '🎉 Channel enabled!' : 'Channel disabled'}`,
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.`,
-        variant: newValue ? "success" : "info",
+        title: "Success",
+        description: `${channel} notifications ${newValue ? 'enabled' : 'disabled'}`,
+        variant: "success",
       });
-    } catch (error: any) {
-      // Revert the change if update fails
-      setFormData(prev => ({
-        ...prev,
-        notifications: formData.notifications
-      }));
-      
+    } catch (error) {
+      console.error('Error updating notification settings:', error);
       toast({
-        title: "Error updating setting",
-        description: error.message,
+        title: "Error",
+        description: "Failed to update notification settings",
         variant: "destructive",
       });
     }
   };
 
-  const copyToClipboard = async (text: string, type: 'webhook' | 'authkey') => {
+  const copyToClipboard = async (text: string, type: 'auth' | 'webhook') => {
     try {
       await navigator.clipboard.writeText(text);
-      if (type === 'webhook') {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } else {
+      if (type === 'auth') {
         setAuthKeyCopied(true);
         setTimeout(() => setAuthKeyCopied(false), 2000);
+      } else {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
+      
       toast({
-        title: "📋 Copied to clipboard!",
-        description: `${type === 'webhook' ? 'Webhook URL' : 'Auth Key'} has been copied successfully.`,
+        title: "Copied!",
+        description: `${type === 'auth' ? 'Auth key' : 'Webhook URL'} copied to clipboard`,
         variant: "success",
       });
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to copy: ', err);
       toast({
-        title: "Failed to copy",
-        description: "Please copy manually.",
+        title: "Error",
+        description: "Failed to copy to clipboard",
         variant: "destructive",
       });
     }
@@ -185,422 +191,304 @@ const Dashboard: React.FC = () => {
     try {
       await regenerateAuthKey();
       toast({
-        title: "🔄 Auth Key regenerated!",
-        description: "Your new auth key has been generated successfully.",
+        title: "Success",
+        description: "Auth key regenerated successfully",
         variant: "success",
       });
     } catch (error) {
+      console.error('Error regenerating auth key:', error);
       toast({
-        title: "Error regenerating auth key",
-        description: "Please try again later.",
+        title: "Error",
+        description: "Failed to regenerate auth key",
         variant: "destructive",
       });
     }
   };
 
-  const getPackDisplayName = (packType: string) => {
-    switch (packType) {
-      case 'mini': return 'Mini Pack';
-      case 'pro': return 'Pro Pack';
-      case 'promax': return 'Pro Max Pack';
-      default: return 'Free Plan';
-    }
-  };
+  if (!userData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const getPackIcon = (packType: string) => {
-    switch (packType) {
-      case 'mini': return <Zap className="w-6 h-6" />;
-      case 'pro': return <Crown className="w-6 h-6" />;
-      case 'promax': return <Shield className="w-6 h-6" />;
-      default: return <div className="w-6 h-6 bg-gray-300 rounded-full" />;
-    }
-  };
+  const webhookUrl = `https://api.pushnotify.app/webhook/${userData.authKey}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative">
-      {/* Enhanced animated background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full filter blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-pink-400/20 to-blue-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <p className="text-gray-600">Manage your notification settings and test your setup</p>
+          </div>
 
-      <Navigation />
-      
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Enhanced Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
-            Welcome back, {userData?.name}! 👋
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Manage your notification channels and configure your webhook settings with ease
-          </p>
-        </div>
-
-        {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium opacity-90 flex items-center gap-2">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                  💎
-                </div>
-                Available Points
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">{userData?.points || 0}</div>
-              <p className="text-sm opacity-90">
-                Credits for sending notifications
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-emerald-500 to-green-700 text-white hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium opacity-90 flex items-center gap-2">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                  {getPackIcon(userData?.packType || 'none')}
-                </div>
-                Current Plan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">{getPackDisplayName(userData?.packType || 'none')}</div>
-              <p className="text-sm opacity-90">
-                Your active subscription
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-purple-500 to-indigo-700 text-white hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium opacity-90 flex items-center gap-2">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                  🔔
-                </div>
-                Active Channels
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-2">
-                {userData ? Object.values(userData.notifications).filter(Boolean).length : 0}
-              </div>
-              <p className="text-sm opacity-90">
-                Notification channels enabled
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Enhanced Webhook URL Section */}
-        <Card className="mb-8 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-blue-50 border-b">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">🔗</span>
-              </div>
-              Your Webhook URL
-            </CardTitle>
-            <CardDescription className="text-base">
-              Use this endpoint to send notifications through your enabled channels
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3 p-5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-md">
-              <code className="flex-1 text-sm font-mono bg-white px-4 py-3 rounded-lg border shadow-sm text-gray-800 break-all">
-                {webhookUrl}
-              </code>
-              <Button
-                onClick={() => copyToClipboard(webhookUrl, 'webhook')}
-                variant="outline"
-                size="sm"
-                className={`min-w-[100px] transition-all duration-300 font-medium ${
-                  copied 
-                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100 shadow-md' 
-                    : 'hover:bg-blue-50 hover:border-blue-300 hover:shadow-md'
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2 animate-scale-in" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy URL
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Enhanced Auth Key Section */}
-        <Card className="mb-8 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-orange-50 border-b">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">🔐</span>
-              </div>
-              Authentication Key
-            </CardTitle>
-            <CardDescription className="text-base">
-              Secure key required for webhook authentication
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3 p-5 bg-gradient-to-r from-gray-50 to-orange-50 rounded-xl border-2 border-dashed border-orange-200 hover:border-orange-400 transition-all duration-300 hover:shadow-md">
-              <code className="flex-1 text-sm font-mono bg-white px-4 py-3 rounded-lg border shadow-sm text-gray-800">
-                {showAuthKey ? userData?.authKey : userData?.authKey?.replace(/./g, '•')}
-              </code>
-              <Button
-                onClick={() => setShowAuthKey(!showAuthKey)}
-                variant="outline"
-                size="sm"
-                className="hover:bg-gray-100 hover:shadow-md transition-all duration-300"
-              >
-                {showAuthKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </Button>
-              <Button
-                onClick={() => copyToClipboard(userData?.authKey || '', 'authkey')}
-                variant="outline"
-                size="sm"
-                className={`min-w-[100px] transition-all duration-300 font-medium ${
-                  authKeyCopied 
-                    ? 'bg-green-50 border-green-300 text-green-700 hover:bg-green-100 shadow-md' 
-                    : 'hover:bg-blue-50 hover:border-blue-300 hover:shadow-md'
-                }`}
-              >
-                {authKeyCopied ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2 animate-scale-in" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy Key
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={handleRegenerateAuthKey}
-                variant="outline"
-                size="sm"
-                className="hover:bg-orange-50 hover:border-orange-300 hover:shadow-md transition-all duration-300 font-medium"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Regenerate
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Enhanced Notification Channels */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-purple-50 border-b">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">📱</span>
-              </div>
-              Notification Channels
-            </CardTitle>
-            <CardDescription className="text-base">
-              Configure your preferred notification methods based on your plan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {/* Email Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
-                availableChannels.includes('email') 
-                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
-                    📧
+          <div className="grid gap-6">
+            {/* API Configuration */}
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="w-5 h-5" />
+                  API Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                <div>
+                  <Label htmlFor="webhook-url" className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Webhook URL
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="webhook-url"
+                      value={webhookUrl}
+                      readOnly
+                      className="font-mono text-sm bg-gray-50 border-gray-200"
+                    />
+                    <Button
+                      onClick={() => copyToClipboard(webhookUrl, 'webhook')}
+                      variant="outline"
+                      size="sm"
+                      className="px-3"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      Email Notifications
-                      {!availableChannels.includes('email') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('email') 
-                        ? `Receive notifications at ${userData?.email}` 
-                        : 'Available in Pro and Pro Max plans'
-                      }
-                    </div>
-                  </div>
+                  {copied && (
+                    <p className="text-sm text-green-600 mt-1 font-medium">✓ Copied to clipboard!</p>
+                  )}
                 </div>
-                <Switch
-                  checked={formData.notifications.email}
-                  onCheckedChange={() => handleNotificationToggle('email')}
-                  disabled={!availableChannels.includes('email')}
-                  className="data-[state=checked]:bg-purple-500"
-                />
-              </div>
-            </div>
 
-            {/* Telegram Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
-                availableChannels.includes('telegram') 
-                  ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 hover:border-blue-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-2xl">
-                    ✈️
-                  </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      Telegram Notifications
-                      {!availableChannels.includes('telegram') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('telegram') 
-                        ? 'Instant notifications via Telegram bot' 
-                        : 'Available in all plans'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.telegram}
-                  onCheckedChange={() => handleNotificationToggle('telegram')}
-                  disabled={!availableChannels.includes('telegram')}
-                  className="data-[state=checked]:bg-blue-500"
-                />
-              </div>
-              
-              {formData.notifications.telegram && availableChannels.includes('telegram') && (
-                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-blue-200 shadow-sm animate-fade-in">
-                  <div className="space-y-4">
-                    <Label htmlFor="telegram" className="text-sm font-semibold text-gray-700">
-                      Telegram Chat ID *
-                    </Label>
-                    <div className="flex space-x-3">
+                <div>
+                  <Label htmlFor="auth-key" className="text-sm font-semibold text-gray-700 mb-2 block">
+                    Auth Key
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
                       <Input
-                        id="telegram"
-                        type="text"
-                        placeholder="Enter your Telegram Chat ID"
-                        value={formData.telegramChatId}
-                        onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
-                        className="flex-1 border-2 focus:border-blue-400 transition-colors"
-                        required
+                        id="auth-key"
+                        type={showAuthKey ? "text" : "password"}
+                        value={userData.authKey || ''}
+                        readOnly
+                        className="font-mono text-sm bg-gray-50 border-gray-200 pr-10"
                       />
-                      <Button 
-                        onClick={() => handleSave('telegramChatId')} 
+                      <Button
+                        onClick={() => setShowAuthKey(!showAuthKey)}
+                        variant="ghost"
                         size="sm"
-                        disabled={telegramLoading || !formData.telegramChatId.trim()}
-                        className="bg-blue-600 hover:bg-blue-700 font-medium px-6"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 h-8 w-8"
                       >
-                        {telegramLoading ? 'Saving...' : 'Save'}
+                        {showAuthKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </Button>
                     </div>
+                    <Button
+                      onClick={() => copyToClipboard(userData.authKey || '', 'auth')}
+                      variant="outline"
+                      size="sm"
+                      className="px-3"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      onClick={handleRegenerateAuthKey}
+                      variant="outline"
+                      size="sm"
+                      className="px-3"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
                   </div>
+                  {authKeyCopied && (
+                    <p className="text-sm text-green-600 mt-1 font-medium">✓ Copied to clipboard!</p>
+                  )}
                 </div>
-              )}
+              </CardContent>
+            </Card>
+
+            {/* Notification Channels */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Telegram Configuration */}
+              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" />
+                    Telegram
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="telegram-enabled" className="text-sm font-semibold text-gray-700">
+                      Enable Telegram Notifications
+                    </Label>
+                    <Switch
+                      id="telegram-enabled"
+                      checked={formData.notifications.telegram}
+                      onCheckedChange={() => handleNotificationToggle('telegram')}
+                    />
+                  </div>
+                  
+                  {formData.notifications.telegram && (
+                    <div className="space-y-3 pt-2 border-t border-gray-100">
+                      <Label htmlFor="telegram-chat-id" className="text-sm font-semibold text-gray-700">
+                        Chat ID
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="telegram-chat-id"
+                          value={formData.telegramChatId}
+                          onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
+                          placeholder="Enter your Telegram Chat ID"
+                          className="flex-1"
+                        />
+                        <Button 
+                          onClick={() => handleSave('telegramChatId')} 
+                          size="sm"
+                          disabled={telegramLoading || !formData.telegramChatId.trim()}
+                          className="bg-blue-600 hover:bg-blue-700 font-medium px-6"
+                        >
+                          {telegramLoading ? 'Saving...' : 'Save'}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Send /start to @PushNotifyBot to get your Chat ID
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* WhatsApp Configuration */}
+              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="w-5 h-5" />
+                    WhatsApp
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="whatsapp-enabled" className="text-sm font-semibold text-gray-700">
+                      Enable WhatsApp Notifications
+                    </Label>
+                    <Switch
+                      id="whatsapp-enabled"
+                      checked={formData.notifications.whatsapp}
+                      onCheckedChange={() => handleNotificationToggle('whatsapp')}
+                    />
+                  </div>
+                  
+                  {formData.notifications.whatsapp && (
+                    <div className="space-y-3 pt-2 border-t border-gray-100">
+                      <Label htmlFor="phone-number" className="text-sm font-semibold text-gray-700">
+                        Phone Number
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="phone-number"
+                          value={formData.phone}
+                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="Enter your phone number"
+                          className="flex-1"
+                        />
+                        <Button 
+                          onClick={() => handleSave('phone')} 
+                          size="sm"
+                          disabled={whatsappLoading || !formData.phone.trim()}
+                          className="bg-green-600 hover:bg-green-700 font-medium px-6"
+                        >
+                          {whatsappLoading ? 'Saving...' : 'Save'}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Include country code (e.g., +1234567890)
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
-            {/* WhatsApp Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
-                availableChannels.includes('whatsapp') 
-                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-2xl">
-                    📱
+            {/* Test Notification */}
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Send className="w-5 h-5" />
+                  Test Notification
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="test-title" className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Title
+                    </Label>
+                    <Input
+                      id="test-title"
+                      value={testNotification.title}
+                      onChange={(e) => setTestNotification(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Notification title"
+                    />
                   </div>
                   <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      WhatsApp Notifications
-                      {!availableChannels.includes('whatsapp') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('whatsapp') 
-                        ? 'Receive notifications via WhatsApp' 
-                        : 'Available in Pro Max plan only'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.whatsapp}
-                  onCheckedChange={() => handleNotificationToggle('whatsapp')}
-                  disabled={!availableChannels.includes('whatsapp')}
-                  className="data-[state=checked]:bg-green-500"
-                />
-              </div>
-              
-              {formData.notifications.whatsapp && availableChannels.includes('whatsapp') && (
-                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-green-200 shadow-sm animate-fade-in">
-                  <div className="space-y-4">
-                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
-                      Phone Number (with country code) *
+                    <Label htmlFor="test-message" className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Message
                     </Label>
-                    <div className="flex space-x-3">
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1234567890"
-                        value={formData.phone}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        className="flex-1 border-2 focus:border-green-400 transition-colors"
-                        required
-                      />
-                      <Button 
-                        onClick={() => handleSave('phone')} 
-                        size="sm"
-                        disabled={whatsappLoading || !formData.phone.trim()}
-                        className="bg-green-600 hover:bg-green-700 font-medium px-6"
-                      >
-                        {whatsappLoading ? 'Saving...' : 'Save'}
-                      </Button>
-                    </div>
+                    <Input
+                      id="test-message"
+                      value={testNotification.message}
+                      onChange={(e) => setTestNotification(prev => ({ ...prev, message: e.target.value }))}
+                      placeholder="Test message"
+                    />
                   </div>
                 </div>
-              )}
-            </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="test-priority" className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Priority
+                    </Label>
+                    <select
+                      id="test-priority"
+                      value={testNotification.priority}
+                      onChange={(e) => setTestNotification(prev => ({ ...prev, priority: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="test-source" className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Source
+                    </Label>
+                    <Input
+                      id="test-source"
+                      value={testNotification.source}
+                      onChange={(e) => setTestNotification(prev => ({ ...prev, source: e.target.value }))}
+                      placeholder="webapp"
+                    />
+                  </div>
+                </div>
 
-            {(userData?.packType === 'none' || !userData?.packType) && (
-              <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl">
-                <div className="flex items-center gap-3 text-yellow-800 font-semibold mb-3">
-                  <div className="w-8 h-8 bg-yellow-200 rounded-lg flex items-center justify-center">
-                    <Lock className="w-5 h-5" />
-                  </div>
-                  Free Plan - Limited Access
+                <Separator />
+                
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={handleSendNotification}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-medium px-8"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Test Notification
+                  </Button>
                 </div>
-                <p className="text-yellow-700 mb-4 leading-relaxed">
-                  You're currently on the free plan with Telegram access. Upgrade to unlock Email and WhatsApp channels with advanced features.
-                </p>
-                <Button 
-                  onClick={() => window.location.href = '/pricing'}
-                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 font-medium"
-                >
-                  <Crown className="w-4 h-4 mr-2" />
-                  Upgrade Your Plan
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
