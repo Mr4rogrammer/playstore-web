@@ -14,6 +14,7 @@ const Dashboard: React.FC = () => {
   const { userData, updateUserData, regenerateAuthKey } = useAuth();
   const [telegramLoading, setTelegramLoading] = useState(false);
   const [whatsappLoading, setWhatsappLoading] = useState(false);
+  const [regenerateLoading, setRegenerateLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [authKeyCopied, setAuthKeyCopied] = useState(false);
   const [showAuthKey, setShowAuthKey] = useState(false);
@@ -182,6 +183,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleRegenerateAuthKey = async () => {
+    setRegenerateLoading(true);
     try {
       await regenerateAuthKey();
       toast({
@@ -195,6 +197,8 @@ const Dashboard: React.FC = () => {
         description: "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setRegenerateLoading(false);
     }
   };
 
@@ -323,7 +327,7 @@ const Dashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="flex items-center space-x-3 p-5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-md">
+            <div className="flex items-center space-x-3 p-5 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all duration-300">
               <code className="flex-1 text-sm font-mono bg-white px-4 py-3 rounded-lg border shadow-sm text-gray-800 break-all">
                 {webhookUrl}
               </code>
@@ -405,10 +409,11 @@ const Dashboard: React.FC = () => {
                 onClick={handleRegenerateAuthKey}
                 variant="outline"
                 size="sm"
+                disabled={regenerateLoading}
                 className="hover:bg-orange-50 hover:border-orange-300 hover:shadow-md transition-all duration-300 font-medium"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Regenerate
+                <RefreshCw className={`w-4 h-4 mr-2 ${regenerateLoading ? 'animate-spin' : ''}`} />
+                {regenerateLoading ? 'Generating...' : 'Regenerate'}
               </Button>
             </div>
           </CardContent>
