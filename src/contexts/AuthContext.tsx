@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -12,6 +11,7 @@ import { doc, getDoc, setDoc, query, where, collection, getDocs } from 'firebase
 import { auth, db } from '../lib/firebase';
 
 interface UserData {
+  uid?: string;
   name: string;
   email: string;
   phone: string;
@@ -28,6 +28,12 @@ interface UserData {
   status: 'normal' | 'blocked';
   lastUpdateAttempt: number;
   updateAttempts: number;
+  lastPayment?: {
+    paymentId: string;
+    amount: number;
+    timestamp: string;
+    plan: string;
+  };
 }
 
 interface AuthContextType {
@@ -103,7 +109,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (user) {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
-          setUserData(userDoc.data() as UserData);
+          const data = userDoc.data() as UserData;
+          setUserData({ ...data, uid: user.uid });
         }
       } else {
         setUserData(null);
@@ -124,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const authId = await generateUniqueAuthId();
     
     const newUserData: UserData = {
+      uid: userCredential.user.uid,
       name,
       email,
       phone: '',
