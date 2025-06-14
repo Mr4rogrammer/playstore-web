@@ -11,11 +11,7 @@ docker-compose up -d --build
 ```
 
 ## Option 2: Clone from GitHub and Run
-1. First, update the `docker-compose.yml` file and replace:
-   - `YOUR_USERNAME` with your GitHub username
-   - `YOUR_REPO_NAME` with your repository name
-
-2. Run the git clone service first:
+1. Run the git clone service first:
 ```bash
 # Clone the repository
 docker-compose --profile clone up git-clone
@@ -27,8 +23,8 @@ docker-compose up --build pushnotify-app
 ## Option 3: Direct Clone and Build
 ```bash
 # Clone your repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/Mr4rogrammer/push-connect-now.git
+cd push-connect-now
 
 # Build and run with Docker Compose
 docker-compose up --build
@@ -50,3 +46,4 @@ docker-compose logs -f
 docker-compose build --no-cache
 docker-compose up
 ```
+

@@ -21,7 +21,7 @@ services:
       sh -c "
         if [ ! -d '/app/.git' ]; then
           echo 'Cloning repository...'
-          git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git /tmp/repo
+          git clone https://github.com/Mr4rogrammer/push-connect-now.git /tmp/repo
           cp -r /tmp/repo/* /app/
           cp -r /tmp/repo/.* /app/ 2>/dev/null || true
         else
@@ -30,3 +30,4 @@ services:
       "
     profiles:
       - clone
+
