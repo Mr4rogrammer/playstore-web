@@ -20,7 +20,7 @@ const Pricing: React.FC = () => {
       points: 100,
       costPerPoint: 0.10,
       bestFor: 'Light usage / testing',
-      features: ['100 notification points', 'Telegram support only'],
+      features: ['100 notification points', 'Telegram support only', 'Basic webhook support'],
       channels: ['telegram']
     },
     {
@@ -31,7 +31,7 @@ const Pricing: React.FC = () => {
       points: 1000,
       costPerPoint: 0.05,
       bestFor: 'Startups, developers',
-      features: ['1000 notification points', 'Telegram & Email support'],
+      features: ['1000 notification points', 'Telegram & Email support', 'Priority webhook support', 'Email support'],
       popular: true,
       channels: ['telegram', 'email']
     },
@@ -43,8 +43,8 @@ const Pricing: React.FC = () => {
       points: 5000,
       costPerPoint: 0.03,
       bestFor: 'Growing businesses / agencies',
-      features: ['5000 notification points', 'All channels supported'],
-      channels: ['telegram', 'whatsapp', 'email']
+      features: ['5000 notification points', 'All channels supported', 'Premium webhook support', 'Priority email support', 'Custom integrations'],
+      channels: ['whatsapp', 'telegram', 'email']
     }
   ];
 
