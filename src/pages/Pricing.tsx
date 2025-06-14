@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
 
 const Pricing: React.FC = () => {
-  const { userData } = useAuth();
+  const { userData, updateUserData } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
 
   const plans = [
@@ -20,7 +20,8 @@ const Pricing: React.FC = () => {
       points: 100,
       costPerPoint: 0.10,
       bestFor: 'Light usage / testing',
-      features: ['100 notification points', 'All channels supported', 'Basic webhook support']
+      features: ['100 notification points', 'Telegram support only', 'Basic webhook support'],
+      channels: ['telegram']
     },
     {
       id: 'pro',
@@ -30,8 +31,9 @@ const Pricing: React.FC = () => {
       points: 1000,
       costPerPoint: 0.05,
       bestFor: 'Startups, developers',
-      features: ['1000 notification points', 'All channels supported', 'Priority webhook support', 'Email support'],
-      popular: true
+      features: ['1000 notification points', 'Telegram & Email support', 'Priority webhook support', 'Email support'],
+      popular: true,
+      channels: ['telegram', 'email']
     },
     {
       id: 'promax',
@@ -41,7 +43,8 @@ const Pricing: React.FC = () => {
       points: 5000,
       costPerPoint: 0.03,
       bestFor: 'Growing businesses / agencies',
-      features: ['5000 notification points', 'All channels supported', 'Premium webhook support', 'Priority email support', 'Custom integrations']
+      features: ['5000 notification points', 'All channels supported', 'Premium webhook support', 'Priority email support', 'Custom integrations'],
+      channels: ['whatsapp', 'telegram', 'email']
     }
   ];
 
@@ -88,15 +91,17 @@ const Pricing: React.FC = () => {
 
   const handlePaymentSuccess = async (plan: any, paymentResponse: any) => {
     try {
-      // Update user points in Firebase
-      const { updateUserData } = useAuth();
+      // Update user points and pack type in Firebase
       const newPoints = (userData?.points || 0) + plan.points;
       
-      await updateUserData({ points: newPoints });
+      await updateUserData({ 
+        points: newPoints,
+        packType: plan.id as 'mini' | 'pro' | 'promax'
+      });
       
       toast({
         title: "Payment Successful! 🎉",
-        description: `${plan.points} points have been added to your account!`,
+        description: `${plan.points} points have been added to your account and your pack has been upgraded!`,
       });
       
       setLoading(null);
@@ -127,8 +132,13 @@ const Pricing: React.FC = () => {
             Choose Your Plan
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Select the perfect plan for your notification needs. All plans include access to WhatsApp, Telegram, and Email channels.
+            Select the perfect plan for your notification needs. Each plan includes different channel access.
           </p>
+          {userData?.packType && userData.packType !== 'none' && (
+            <div className="mt-4 inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+              Current Plan: {userData.packType.charAt(0).toUpperCase() + userData.packType.slice(1)} Pack
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -137,12 +147,20 @@ const Pricing: React.FC = () => {
               key={plan.id} 
               className={`relative transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
                 plan.popular ? 'border-blue-500 border-2 shadow-lg' : 'hover:shadow-lg'
-              }`}
+              } ${userData?.packType === plan.id ? 'ring-2 ring-green-500 bg-green-50' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
+                  </span>
+                </div>
+              )}
+              
+              {userData?.packType === plan.id && (
+                <div className="absolute -top-4 right-4">
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                    Current
                   </span>
                 </div>
               )}
@@ -172,14 +190,19 @@ const Pricing: React.FC = () => {
                 
                 <Button 
                   onClick={() => handlePurchase(plan)}
-                  disabled={loading === plan.id}
+                  disabled={loading === plan.id || userData?.packType === plan.id}
                   className={`w-full ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
                       : ''
-                  }`}
+                  } ${userData?.packType === plan.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {loading === plan.id ? 'Processing...' : `Buy ${plan.name}`}
+                  {userData?.packType === plan.id 
+                    ? 'Current Plan' 
+                    : loading === plan.id 
+                      ? 'Processing...' 
+                      : `Buy ${plan.name}`
+                  }
                 </Button>
               </CardContent>
             </Card>

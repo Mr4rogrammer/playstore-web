@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Copy, Check, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Copy, Check, Eye, EyeOff, RefreshCw, Lock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
@@ -21,11 +22,28 @@ const Dashboard: React.FC = () => {
     notifications: {
       whatsapp: userData?.notifications?.whatsapp || false,
       telegram: userData?.notifications?.telegram || false,
-      email: userData?.notifications?.email || true,
+      email: userData?.notifications?.email || false,
     }
   });
 
   const webhookUrl = "https://n8n.mrprogrammer.info/webhook/sample";
+
+  // Determine available channels based on pack type
+  const getAvailableChannels = () => {
+    const packType = userData?.packType || 'none';
+    switch (packType) {
+      case 'mini':
+        return ['telegram'];
+      case 'pro':
+        return ['telegram', 'email'];
+      case 'promax':
+        return ['telegram', 'email', 'whatsapp'];
+      default:
+        return [];
+    }
+  };
+
+  const availableChannels = getAvailableChannels();
 
   const handleSave = async (field: 'phone' | 'telegramChatId') => {
     setLoading(true);
@@ -52,6 +70,15 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
+    if (!availableChannels.includes(channel)) {
+      toast({
+        title: "Channel not available",
+        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} is not available in your current plan. Please upgrade to access this channel.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newNotifications = {
       ...formData.notifications,
       [channel]: !formData.notifications[channel]
@@ -119,6 +146,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getPackDisplayName = (packType: string) => {
+    switch (packType) {
+      case 'mini': return 'Mini Pack';
+      case 'pro': return 'Pro Pack';
+      case 'promax': return 'Pro Max Pack';
+      default: return 'No Plan';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
       {/* Animated background elements */}
@@ -155,12 +191,12 @@ const Dashboard: React.FC = () => {
 
           <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium opacity-90">Account Name</CardTitle>
+              <CardTitle className="text-sm font-medium opacity-90">Current Plan</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">👤 {userData?.name}</div>
+              <div className="text-2xl font-bold">📦 {getPackDisplayName(userData?.packType || 'none')}</div>
               <p className="text-xs opacity-90 mt-1">
-                Your account information
+                Your subscription plan
               </p>
             </CardContent>
           </Card>
@@ -279,27 +315,40 @@ const Dashboard: React.FC = () => {
           <CardHeader>
             <CardTitle>Notification Channels</CardTitle>
             <CardDescription>
-              Enable or disable notification channels and configure your contact details
+              Enable or disable notification channels based on your subscription plan
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* WhatsApp Section */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className={`flex items-center justify-between p-4 rounded-lg ${
+                availableChannels.includes('whatsapp') ? 'bg-green-50' : 'bg-gray-100'
+              }`}>
                 <div className="flex items-center space-x-3">
                   <div className="text-2xl">📱</div>
                   <div>
-                    <div className="font-medium">WhatsApp</div>
-                    <div className="text-sm text-gray-500">Receive notifications via WhatsApp</div>
+                    <div className="font-medium flex items-center gap-2">
+                      WhatsApp
+                      {!availableChannels.includes('whatsapp') && (
+                        <Lock className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {availableChannels.includes('whatsapp') 
+                        ? 'Receive notifications via WhatsApp' 
+                        : 'Available in Pro Max Pack only'
+                      }
+                    </div>
                   </div>
                 </div>
                 <Switch
                   checked={formData.notifications.whatsapp}
                   onCheckedChange={() => handleNotificationToggle('whatsapp')}
+                  disabled={!availableChannels.includes('whatsapp')}
                 />
               </div>
               
-              {formData.notifications.whatsapp && (
+              {formData.notifications.whatsapp && availableChannels.includes('whatsapp') && (
                 <div className="ml-4 p-4 bg-white rounded-lg border border-green-200 animate-fade-in">
                   <div className="space-y-3">
                     <Label htmlFor="phone" className="text-sm font-medium">
@@ -330,21 +379,34 @@ const Dashboard: React.FC = () => {
 
             {/* Telegram Section */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div className={`flex items-center justify-between p-4 rounded-lg ${
+                availableChannels.includes('telegram') ? 'bg-blue-50' : 'bg-gray-100'
+              }`}>
                 <div className="flex items-center space-x-3">
                   <div className="text-2xl">✈️</div>
                   <div>
-                    <div className="font-medium">Telegram</div>
-                    <div className="text-sm text-gray-500">Receive notifications via Telegram</div>
+                    <div className="font-medium flex items-center gap-2">
+                      Telegram
+                      {!availableChannels.includes('telegram') && (
+                        <Lock className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {availableChannels.includes('telegram') 
+                        ? 'Receive notifications via Telegram' 
+                        : 'Available in all paid plans'
+                      }
+                    </div>
                   </div>
                 </div>
                 <Switch
                   checked={formData.notifications.telegram}
                   onCheckedChange={() => handleNotificationToggle('telegram')}
+                  disabled={!availableChannels.includes('telegram')}
                 />
               </div>
               
-              {formData.notifications.telegram && (
+              {formData.notifications.telegram && availableChannels.includes('telegram') && (
                 <div className="ml-4 p-4 bg-white rounded-lg border border-blue-200 animate-fade-in">
                   <div className="space-y-3">
                     <Label htmlFor="telegram" className="text-sm font-medium">
@@ -374,21 +436,51 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Email Section */}
-            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+            <div className={`flex items-center justify-between p-4 rounded-lg ${
+              availableChannels.includes('email') ? 'bg-purple-50' : 'bg-gray-100'
+            }`}>
               <div className="flex items-center space-x-3">
                 <div className="text-2xl">📧</div>
                 <div>
-                  <div className="font-medium">Email</div>
+                  <div className="font-medium flex items-center gap-2">
+                    Email
+                    {!availableChannels.includes('email') && (
+                      <Lock className="w-4 h-4 text-gray-400" />
+                    )}
+                  </div>
                   <div className="text-sm text-gray-500">
-                    Receive notifications via Email ({userData?.email})
+                    {availableChannels.includes('email') 
+                      ? `Receive notifications via Email (${userData?.email})` 
+                      : 'Available in Pro and Pro Max packs'
+                    }
                   </div>
                 </div>
               </div>
               <Switch
                 checked={formData.notifications.email}
                 onCheckedChange={() => handleNotificationToggle('email')}
+                disabled={!availableChannels.includes('email')}
               />
             </div>
+
+            {(userData?.packType === 'none' || !userData?.packType) && (
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 text-yellow-800 font-medium mb-2">
+                  <Lock className="w-5 h-5" />
+                  No Active Plan
+                </div>
+                <p className="text-yellow-700 text-sm mb-3">
+                  You don't have an active subscription plan. Purchase a plan to enable notification channels.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/pricing'}
+                  size="sm"
+                  className="bg-yellow-600 hover:bg-yellow-700"
+                >
+                  View Pricing Plans
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

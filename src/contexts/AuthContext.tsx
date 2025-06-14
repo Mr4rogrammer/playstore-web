@@ -22,6 +22,7 @@ interface UserData {
   };
   points: number;
   authKey: string;
+  packType: 'none' | 'mini' | 'pro' | 'promax';
 }
 
 interface AuthContextType {
@@ -85,10 +86,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       notifications: {
         whatsapp: false,
         telegram: false,
-        email: true
+        email: false
       },
       points: 10,
-      authKey: generateAuthKey()
+      authKey: generateAuthKey(),
+      packType: 'none'
     };
     
     await setDoc(doc(db, 'users', userCredential.user.uid), newUserData);
