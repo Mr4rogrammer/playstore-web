@@ -51,8 +51,10 @@ const Dashboard: React.FC = () => {
 
   const availableChannels = getAvailableChannels();
 
-  const validateInputs = () => {
-    if (formData.notifications.telegram && !formData.telegramChatId.trim()) {
+  const validateChannelRequirements = (channel: keyof typeof formData.notifications, enableValue: boolean) => {
+    if (!enableValue) return true; // No validation needed when disabling
+    
+    if (channel === 'telegram' && !formData.telegramChatId.trim()) {
       toast({
         title: "Validation Error",
         description: "Please enter your Telegram Chat ID before enabling Telegram notifications.",
@@ -61,7 +63,7 @@ const Dashboard: React.FC = () => {
       return false;
     }
 
-    if (formData.notifications.whatsapp && !formData.phone.trim()) {
+    if (channel === 'whatsapp' && !formData.phone.trim()) {
       toast({
         title: "Validation Error",
         description: "Please enter your phone number before enabling WhatsApp notifications.",
@@ -74,8 +76,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSave = async (field: 'phone' | 'telegramChatId') => {
-    if (!validateInputs()) return;
-    
     setLoading(true);
     
     try {
@@ -100,6 +100,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
+    // Check if channel is available in current plan
     if (!availableChannels.includes(channel)) {
       toast({
         title: "Channel not available",
@@ -109,45 +110,46 @@ const Dashboard: React.FC = () => {
       return;
     }
 
+    const newValue = !formData.notifications[channel];
+    
+    // Validate requirements before enabling
+    if (!validateChannelRequirements(channel, newValue)) {
+      return; // Don't change state if validation fails
+    }
+
     const newNotifications = {
       ...formData.notifications,
-      [channel]: !formData.notifications[channel]
+      [channel]: newValue
     };
     
+    // Update local state first
     setFormData(prev => ({
       ...prev,
       notifications: newNotifications
     }));
 
-    if (!validateInputs()) {
-      // Revert the change if validation fails
-      setFormData(prev => ({
-        ...prev,
-        notifications: formData.notifications
-      }));
-      return;
-    }
-
     try {
+      // Update in database
       await updateUserData({
         notifications: newNotifications
       });
       
       toast({
         title: "Notification setting updated",
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newNotifications[channel] ? 'enabled' : 'disabled'}.`,
+        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.`,
       });
     } catch (error: any) {
-      toast({
-        title: "Error updating setting",
-        description: error.message,
-        variant: "destructive",
-      });
       // Revert the change if update fails
       setFormData(prev => ({
         ...prev,
         notifications: formData.notifications
       }));
+      
+      toast({
+        title: "Error updating setting",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
