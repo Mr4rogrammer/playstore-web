@@ -232,11 +232,16 @@ const Dashboard: React.FC = () => {
         <div className="mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
             Welcome back, {userData?.name}! 
-            <span className="inline-block text-4xl ml-3 animate-bounce" style={{ 
-              animationDuration: '1.5s',
-              animationIterationCount: 'infinite',
-              transformOrigin: '70% 70%'
-            }}>
+            <span 
+              className="inline-block text-6xl ml-4 animate-bounce select-none"
+              style={{ 
+                animationDuration: '2s',
+                animationIterationCount: 'infinite',
+                transformOrigin: '50% 100%',
+                textShadow: '0 0 10px rgba(255,255,255,0.8)',
+                filter: 'drop-shadow(0 0 8px rgba(0,0,0,0.1))'
+              }}
+            >
               👋
             </span>
           </h1>
