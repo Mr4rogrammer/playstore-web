@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, Zap, Shield, Code, Globe } from 'lucide-react';
+import { Copy, Check, Zap, Shield, Code, Globe, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
@@ -10,6 +11,7 @@ import { useState } from 'react';
 const Documentation: React.FC = () => {
   const { userData } = useAuth();
   const [copied, setCopied] = useState<string | null>(null);
+  const [showAuthKey, setShowAuthKey] = useState(false);
 
   const copyToClipboard = async (text: string, type: string) => {
     try {
@@ -37,6 +39,9 @@ const Documentation: React.FC = () => {
     "priority": "high",
     "source": "webapp"
   };
+
+  const displayAuthKey = userData?.authKey || 'YOUR_AUTH_KEY';
+  const maskedAuthKey = userData?.authKey ? `pk_${'*'.repeat(displayAuthKey.length - 6)}${displayAuthKey.slice(-4)}` : 'Please login to view';
 
   const curlExample = `curl -X POST ${webhookUrl} \\
   -H "Content-Type: application/json" \\
@@ -104,14 +109,34 @@ print(response.json())`;
 
           <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
             <CardHeader className="pb-4">
-              <div className="flex items-center space-x-3">
-                <Shield className="w-6 h-6" />
-                <CardTitle className="text-lg font-semibold">Your Auth Key</CardTitle>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Shield className="w-6 h-6" />
+                  <CardTitle className="text-lg font-semibold">Your Auth Key</CardTitle>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAuthKey(!showAuthKey)}
+                    className="text-white hover:bg-white/20 p-2 h-8 w-8"
+                  >
+                    {showAuthKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard(displayAuthKey, 'Auth Key')}
+                    className="text-white hover:bg-white/20 p-2 h-8 w-8"
+                  >
+                    {copied === 'Auth Key' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-sm font-mono break-all bg-white/20 p-3 rounded-lg backdrop-blur-sm">
-                {userData?.authKey || 'Please login to view'}
+                {showAuthKey ? displayAuthKey : maskedAuthKey}
               </div>
             </CardContent>
           </Card>
@@ -144,8 +169,35 @@ print(response.json())`;
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
-              <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl font-mono text-lg shadow-inner">
-                <span className="text-blue-400">Authorization:</span> {userData?.authKey || 'YOUR_AUTH_KEY'}
+              <div className="relative group">
+                <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl font-mono text-lg shadow-inner flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-blue-400">Authorization:</span>
+                    <span>{showAuthKey ? displayAuthKey : maskedAuthKey}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAuthKey(!showAuthKey)}
+                      className="text-white hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
+                      {showAuthKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </Button>
+                    <Button
+                      onClick={() => copyToClipboard(displayAuthKey, 'Auth Key')}
+                      variant="secondary"
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
+                      {copied === 'Auth Key' ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
