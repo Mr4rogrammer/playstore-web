@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,8 +37,9 @@ const Dashboard: React.FC = () => {
         return ['telegram', 'email'];
       case 'promax':
         return ['telegram', 'email', 'whatsapp'];
+      case 'none':
       default:
-        return [];
+        return ['telegram']; // Telegram is available for free/none pack users
     }
   };
 
@@ -467,10 +467,10 @@ const Dashboard: React.FC = () => {
               <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-center gap-2 text-yellow-800 font-medium mb-2">
                   <Lock className="w-5 h-5" />
-                  No Active Plan
+                  Free Plan - Telegram Available
                 </div>
                 <p className="text-yellow-700 text-sm mb-3">
-                  You don't have an active subscription plan. Purchase a plan to enable notification channels.
+                  You're on the free plan with Telegram access. Purchase a plan to unlock Email and WhatsApp channels.
                 </p>
                 <Button 
                   onClick={() => window.location.href = '/pricing'}
