@@ -104,6 +104,16 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
+    // Show under development message for email and WhatsApp
+    if (channel === 'email' || channel === 'whatsapp') {
+      toast({
+        title: "🚧 Under Development",
+        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications are currently under development and will be available soon!`,
+        variant: "info",
+      });
+      return;
+    }
+
     // Check if channel is available in current plan
     if (!availableChannels.includes(channel)) {
       toast({
