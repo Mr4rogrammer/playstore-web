@@ -5,10 +5,12 @@ import { Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const Pricing: React.FC = () => {
   const { userData, updateUserData } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const plans = [
     {
@@ -145,19 +147,19 @@ const Pricing: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400 to-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute -top-40 -right-40 w-60 sm:w-80 h-60 sm:h-80 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-60 sm:w-80 h-60 sm:h-80 bg-gradient-to-br from-pink-400 to-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 sm:w-80 h-60 sm:h-80 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
       </div>
 
       <Navigation />
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">
             Choose Your Plan
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
             Select the perfect plan for your notification needs. Each plan includes different channel access.
           </p>
           {userData?.packType && userData.packType !== 'none' && (
@@ -167,7 +169,7 @@ const Pricing: React.FC = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className={`grid grid-cols-1 ${isMobile ? 'gap-6' : 'md:grid-cols-3 gap-8'} max-w-5xl mx-auto`}>
           {plans.map((plan) => (
             <Card 
               key={plan.id} 
@@ -192,14 +194,14 @@ const Pricing: React.FC = () => {
               )}
               
               <CardHeader className="text-center">
-                <div className="text-4xl mb-2">{plan.icon}</div>
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-600">{plan.bestFor}</CardDescription>
+                <div className="text-3xl sm:text-4xl mb-2">{plan.icon}</div>
+                <CardTitle className="text-xl sm:text-2xl font-bold">{plan.name}</CardTitle>
+                <CardDescription className="text-gray-600 text-sm sm:text-base">{plan.bestFor}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">₹{plan.price}</span>
-                  <span className="text-gray-600 ml-2">/ {plan.points} points</span>
+                  <span className="text-3xl sm:text-4xl font-bold text-gray-900">₹{plan.price}</span>
+                  <span className="text-gray-600 ml-2 text-sm sm:text-base">/ {plan.points} points</span>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs sm:text-sm text-gray-500">
                   ₹{plan.costPerPoint.toFixed(2)} per point
                 </div>
               </CardHeader>
@@ -208,8 +210,8 @@ const Pricing: React.FC = () => {
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
-                      <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-3 flex-shrink-0" />
+                      <span className="text-gray-700 text-sm sm:text-base">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -217,7 +219,7 @@ const Pricing: React.FC = () => {
                 <Button 
                   onClick={() => handlePurchase(plan)}
                   disabled={loading === plan.id || userData?.packType === plan.id}
-                  className={`w-full ${
+                  className={`w-full text-sm sm:text-base ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
                       : ''
@@ -235,34 +237,34 @@ const Pricing: React.FC = () => {
           ))}
         </div>
         
-        <div className="mt-12 max-w-4xl mx-auto">
+        <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader>
-              <CardTitle className="text-blue-900">Point Usage Information</CardTitle>
+              <CardTitle className="text-blue-900 text-lg sm:text-xl">Point Usage Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-blue-800 mb-4">
+              <p className="text-blue-800 mb-4 text-sm sm:text-base">
                 Each notification uses points per webhook call. Points are deducted based on enabled channels:
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <div className="bg-white p-4 rounded-lg">
-                  <div className="text-2xl mb-2">✈️</div>
-                  <div className="font-medium">Telegram</div>
-                  <div className="text-blue-600 font-bold">1 point</div>
+              <div className={`grid grid-cols-1 ${isMobile ? 'gap-3' : 'md:grid-cols-3 gap-4'} text-center`}>
+                <div className="bg-white p-3 sm:p-4 rounded-lg">
+                  <div className="text-xl sm:text-2xl mb-2">✈️</div>
+                  <div className="font-medium text-sm sm:text-base">Telegram</div>
+                  <div className="text-blue-600 font-bold text-sm sm:text-base">1 point</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg">
-                  <div className="text-2xl mb-2">📧</div>
-                  <div className="font-medium">Email</div>
-                  <div className="text-blue-600 font-bold">2 points</div>
+                <div className="bg-white p-3 sm:p-4 rounded-lg">
+                  <div className="text-xl sm:text-2xl mb-2">📧</div>
+                  <div className="font-medium text-sm sm:text-base">Email</div>
+                  <div className="text-blue-600 font-bold text-sm sm:text-base">2 points</div>
                 </div>
-                <div className="bg-white p-4 rounded-lg">
-                  <div className="text-2xl mb-2">📱</div>
-                  <div className="font-medium">WhatsApp</div>
-                  <div className="text-blue-600 font-bold">2 points</div>
+                <div className="bg-white p-3 sm:p-4 rounded-lg">
+                  <div className="text-xl sm:text-2xl mb-2">📱</div>
+                  <div className="font-medium text-sm sm:text-base">WhatsApp</div>
+                  <div className="text-blue-600 font-bold text-sm sm:text-base">2 points</div>
                 </div>
               </div>
               <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
-                <p className="text-yellow-800 text-sm">
+                <p className="text-yellow-800 text-xs sm:text-sm">
                   <strong>Example:</strong> If all 3 channels are enabled, each webhook call uses 5 points (1+2+2). 
                   If only Telegram is enabled, each call uses 1 point.
                 </p>
@@ -271,8 +273,8 @@ const Pricing: React.FC = () => {
           </Card>
         </div>
         
-        <div className="text-center mt-12">
-          <p className="text-gray-600">
+        <div className="text-center mt-8 sm:mt-12">
+          <p className="text-gray-600 text-sm sm:text-base px-4">
             All payments are secure and processed through Razorpay. Points are added instantly to your account.
           </p>
         </div>
