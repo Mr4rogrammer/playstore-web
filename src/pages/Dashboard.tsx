@@ -508,12 +508,12 @@ const Dashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Email Section - Now Second */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
+            {/* Email Section - Now Second with blur and under development overlay */}
+            <div className="space-y-4 relative">
+              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
                 availableChannels.includes('email') 
-                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
+                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md blur-[1px]' 
+                  : 'bg-gray-100 border-gray-200 blur-[1px]'
               }`}>
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
@@ -541,14 +541,22 @@ const Dashboard: React.FC = () => {
                   className="data-[state=checked]:bg-purple-500"
                 />
               </div>
+              {/* Under Development Overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg">
+                  <span className="text-purple-700 font-semibold text-sm flex items-center gap-2">
+                    🚧 Under Development
+                  </span>
+                </div>
+              </div>
             </div>
 
-            {/* WhatsApp Section - Remains Third */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
+            {/* WhatsApp Section - Remains Third with blur and under development overlay */}
+            <div className="space-y-4 relative">
+              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
                 availableChannels.includes('whatsapp') 
-                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
+                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300 hover:shadow-md blur-[1px]' 
+                  : 'bg-gray-100 border-gray-200 blur-[1px]'
               }`}>
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-2xl">
@@ -575,6 +583,14 @@ const Dashboard: React.FC = () => {
                   disabled={!availableChannels.includes('whatsapp')}
                   className="data-[state=checked]:bg-green-500"
                 />
+              </div>
+              {/* Under Development Overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-green-200 shadow-lg">
+                  <span className="text-green-700 font-semibold text-sm flex items-center gap-2">
+                    🚧 Under Development
+                  </span>
+                </div>
               </div>
               
               {formData.notifications.whatsapp && availableChannels.includes('whatsapp') && (
@@ -632,6 +648,24 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const getPackDisplayName = (packType: string) => {
+  switch (packType) {
+    case 'mini': return 'Mini Pack';
+    case 'pro': return 'Pro Pack';
+    case 'promax': return 'Pro Max Pack';
+    default: return 'Free Plan';
+  }
+};
+
+const getPackIcon = (packType: string) => {
+  switch (packType) {
+    case 'mini': return <Zap className="w-6 h-6" />;
+    case 'pro': return <Crown className="w-6 h-6" />;
+    case 'promax': return <Shield className="w-6 h-6" />;
+    default: return <div className="w-6 h-6 bg-gray-300 rounded-full" />;
+  }
 };
 
 export default Dashboard;
