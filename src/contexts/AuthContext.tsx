@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -141,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         telegram: false,
         whatsapp: false
       },
-      points: 10,
+      points: 100,
       authKey,
       authId,
       packType: 'none',
