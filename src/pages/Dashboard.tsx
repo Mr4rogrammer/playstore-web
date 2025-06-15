@@ -443,42 +443,7 @@ const Dashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
-            {/* Email Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
-                availableChannels.includes('email') 
-                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
-                    📧
-                  </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      Email Notifications
-                      {!availableChannels.includes('email') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('email') 
-                        ? `Receive notifications at ${userData?.email}` 
-                        : 'Available in Pro and Pro Max plans'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.email}
-                  onCheckedChange={() => handleNotificationToggle('email')}
-                  disabled={!availableChannels.includes('email')}
-                  className="data-[state=checked]:bg-purple-500"
-                />
-              </div>
-            </div>
-
-            {/* Telegram Section */}
+            {/* Telegram Section - Now First */}
             <div className="space-y-4">
               <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
                 availableChannels.includes('telegram') 
@@ -543,7 +508,42 @@ const Dashboard: React.FC = () => {
               )}
             </div>
 
-            {/* WhatsApp Section */}
+            {/* Email Section - Now Second */}
+            <div className="space-y-4">
+              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
+                availableChannels.includes('email') 
+                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md' 
+                  : 'bg-gray-100 border-gray-200'
+              }`}>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
+                    📧
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lg flex items-center gap-2">
+                      Email Notifications
+                      {!availableChannels.includes('email') && (
+                        <Lock className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {availableChannels.includes('email') 
+                        ? `Receive notifications at ${userData?.email}` 
+                        : 'Available in Pro and Pro Max plans'
+                      }
+                    </div>
+                  </div>
+                </div>
+                <Switch
+                  checked={formData.notifications.email}
+                  onCheckedChange={() => handleNotificationToggle('email')}
+                  disabled={!availableChannels.includes('email')}
+                  className="data-[state=checked]:bg-purple-500"
+                />
+              </div>
+            </div>
+
+            {/* WhatsApp Section - Remains Third */}
             <div className="space-y-4">
               <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
                 availableChannels.includes('whatsapp') 
