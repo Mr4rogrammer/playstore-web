@@ -55,7 +55,7 @@ const Pricing: React.FC = () => {
     try {
       // Initialize Razorpay with your test key
       const options = {
-        key: 'rzp_test_EaH3P78goZQqki', // Your actual test key
+        key: 'rzp_live_wLTTqoJwhvOqfA', // Your actual test key
         amount: plan.price * 100, // Amount in paise
         currency: 'INR',
         name: 'PushNotify',
