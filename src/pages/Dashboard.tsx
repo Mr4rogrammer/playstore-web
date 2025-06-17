@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,14 +19,29 @@ const Dashboard: React.FC = () => {
   const [authKeyCopied, setAuthKeyCopied] = useState(false);
   const [showAuthKey, setShowAuthKey] = useState(false);
   const [formData, setFormData] = useState({
-    phone: userData?.phone || '',
-    telegramChatId: userData?.telegramChatId || '',
+    phone: '',
+    telegramChatId: '',
     notifications: {
-      email: userData?.notifications?.email || false,
-      telegram: userData?.notifications?.telegram || false,
-      whatsapp: userData?.notifications?.whatsapp || false,
+      email: false,
+      telegram: false,
+      whatsapp: false,
     }
   });
+
+  // Sync formData with userData whenever userData changes
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        phone: userData.phone || '',
+        telegramChatId: userData.telegramChatId || '',
+        notifications: {
+          email: userData.notifications?.email || false,
+          telegram: userData.notifications?.telegram || false,
+          whatsapp: userData.notifications?.whatsapp || false,
+        }
+      });
+    }
+  }, [userData]);
 
   // Show blocked account screen if user is blocked
   if (userData?.status === 'blocked') {
@@ -35,7 +50,6 @@ const Dashboard: React.FC = () => {
 
   const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
 
-  // Determine available channels based on pack type
   const getAvailableChannels = () => {
     const packType = userData?.packType || 'none';
     switch (packType) {
@@ -157,7 +171,10 @@ const Dashboard: React.FC = () => {
       // Revert the change if update fails
       setFormData(prev => ({
         ...prev,
-        notifications: formData.notifications
+        notifications: {
+          ...prev.notifications,
+          [channel]: !newValue // Revert to previous state
+        }
       }));
       
       toast({
@@ -648,24 +665,6 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-const getPackDisplayName = (packType: string) => {
-  switch (packType) {
-    case 'mini': return 'Mini Pack';
-    case 'pro': return 'Pro Pack';
-    case 'promax': return 'Pro Max Pack';
-    default: return 'Free Plan';
-  }
-};
-
-const getPackIcon = (packType: string) => {
-  switch (packType) {
-    case 'mini': return <Zap className="w-6 h-6" />;
-    case 'pro': return <Crown className="w-6 h-6" />;
-    case 'promax': return <Shield className="w-6 h-6" />;
-    default: return <div className="w-6 h-6 bg-gray-300 rounded-full" />;
-  }
 };
 
 export default Dashboard;
