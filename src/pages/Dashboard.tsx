@@ -67,24 +67,17 @@ const Dashboard: React.FC = () => {
 
   const availableChannels = getAvailableChannels();
 
-  const validateChannelRequirements = (channel: keyof typeof formData.notifications, enableValue: boolean) => {
-    if (!enableValue) return true; // No validation needed when disabling
-    
-    // Only validate Telegram Chat ID requirement when enabling
-    if (channel === 'telegram' && !formData.telegramChatId.trim()) {
+  const handleSave = async (field: 'phone' | 'telegramChatId') => {
+    // Validate required fields only when saving
+    if (field === 'telegramChatId' && !formData.telegramChatId.trim()) {
       toast({
         title: "Validation Error",
-        description: "Please enter your Telegram Chat ID before enabling Telegram notifications.",
+        description: "Please enter your Telegram Chat ID to save.",
         variant: "destructive",
       });
-      return false;
+      return;
     }
 
-    // For WhatsApp, allow enabling without phone number - user will add it after enabling
-    return true;
-  };
-
-  const handleSave = async (field: 'phone' | 'telegramChatId') => {
     if (field === 'telegramChatId') {
       setTelegramLoading(true);
     } else {
@@ -140,11 +133,6 @@ const Dashboard: React.FC = () => {
 
     const newValue = !formData.notifications[channel];
     
-    // Validate requirements before enabling
-    if (!validateChannelRequirements(channel, newValue)) {
-      return; // Don't change state if validation fails
-    }
-
     const newNotifications = {
       ...formData.notifications,
       [channel]: newValue
@@ -164,7 +152,7 @@ const Dashboard: React.FC = () => {
       
       toast({
         title: `${newValue ? '🎉 Channel enabled!' : 'Channel disabled'}`,
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.`,
+        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.${newValue && channel === 'telegram' ? ' Please add your Telegram Chat ID below.' : ''}`,
         variant: newValue ? "success" : "info",
       });
     } catch (error: any) {
@@ -460,7 +448,7 @@ const Dashboard: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
-            {/* Telegram Section - Now First */}
+            {/* Telegram Section */}
             <div className="space-y-4">
               <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
                 availableChannels.includes('telegram') 
@@ -496,7 +484,7 @@ const Dashboard: React.FC = () => {
               
               {/* Show Telegram Chat ID input only when telegram is enabled */}
               {formData.notifications.telegram && availableChannels.includes('telegram') && (
-                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-blue-200 shadow-sm">
+                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-blue-200 shadow-sm animate-fade-in">
                   <div className="space-y-4">
                     <Label htmlFor="telegram" className="text-sm font-semibold text-gray-700">
                       Telegram Chat ID *
@@ -525,7 +513,7 @@ const Dashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Email Section - Now Second with blur and under development overlay */}
+            {/* Email Section */}
             <div className="space-y-4 relative">
               <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
                 availableChannels.includes('email') 
@@ -558,7 +546,6 @@ const Dashboard: React.FC = () => {
                   className="data-[state=checked]:bg-purple-500"
                 />
               </div>
-              {/* Under Development Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg">
                   <span className="text-purple-700 font-semibold text-sm flex items-center gap-2">
@@ -568,7 +555,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* WhatsApp Section - Remains Third with blur and under development overlay */}
+            {/* WhatsApp Section */}
             <div className="space-y-4 relative">
               <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
                 availableChannels.includes('whatsapp') 
@@ -601,7 +588,6 @@ const Dashboard: React.FC = () => {
                   className="data-[state=checked]:bg-green-500"
                 />
               </div>
-              {/* Under Development Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-green-200 shadow-lg">
                   <span className="text-green-700 font-semibold text-sm flex items-center gap-2">
