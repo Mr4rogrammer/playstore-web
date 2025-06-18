@@ -12,6 +12,7 @@ import Pricing from "./pages/Pricing";
 import Documentation from "./pages/Documentation";
 import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
+import Download from "./pages/Download";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/download" element={<Download />} />
             <Route path="/dashboard" element={
               <AuthRoute fallback={<LoginForm />}>
                 <Dashboard />
