@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Copy, Check, Eye, EyeOff, RefreshCw, Lock, Zap, Crown, Shield } from 'lucide-react';
+import { Copy, Check, Eye, EyeOff, RefreshCw, Lock, Zap, Crown, Shield, Info } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import Navigation from '../components/Navigation';
@@ -489,6 +489,23 @@ const Dashboard: React.FC = () => {
                     <Label htmlFor="telegram" className="text-sm font-semibold text-gray-700">
                       Telegram Chat ID *
                     </Label>
+                    
+                    {/* Help note for finding Chat ID */}
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm text-blue-800">
+                          <p className="font-medium mb-2">How to find your Telegram Chat ID:</p>
+                          <ol className="list-decimal list-inside space-y-1 text-blue-700">
+                            <li>Open Telegram and search for <strong>@userinfobot</strong></li>
+                            <li>Start a chat with the bot by clicking "Start"</li>
+                            <li>The bot will send you your Chat ID (it's a number)</li>
+                            <li>Copy and paste that number here</li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <div className="flex space-x-3">
                       <Input
                         id="telegram"
