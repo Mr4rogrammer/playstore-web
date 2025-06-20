@@ -495,12 +495,13 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-start gap-3">
                         <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                         <div className="text-sm text-blue-800">
-                          <p className="font-medium mb-2">How to find your Telegram Chat ID:</p>
+                          <p className="font-medium mb-2">How to set up Telegram notifications:</p>
                           <ol className="list-decimal list-inside space-y-1 text-blue-700">
                             <li>Open Telegram and search for <strong>@userinfobot</strong></li>
                             <li>Start a chat with the bot by clicking "Start"</li>
                             <li>The bot will send you your Chat ID (it's a number)</li>
-                            <li>Copy and paste that number here</li>
+                            <li>Next, search for <strong>@MrPushNotifybot</strong> and subscribe to it</li>
+                            <li>Copy and paste your Chat ID number here</li>
                           </ol>
                         </div>
                       </div>
