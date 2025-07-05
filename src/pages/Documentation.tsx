@@ -31,48 +31,20 @@ const Documentation: React.FC = () => {
     }
   };
 
-  const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
+  const webhookUrl = "https://automation.mrprogrammer.info/webhook/snappify";
 
-  const examplePayload = {
-    "title": "information data",
-    "data": {
-      "message": "Hello from your app!",
-      "title": "Notification Title",
-      "priority": "high",
-      "source": "webapp"
-    }
-  };
 
   const displayAuthKey = userData?.authKey || 'YOUR_AUTH_KEY';
   const maskedAuthKey = userData?.authKey ? `pk_${'*'.repeat(displayAuthKey.length - 6)}${displayAuthKey.slice(-4)}` : 'Please login to view';
 
-  const curlExample = `curl -X POST ${webhookUrl} \\
+
+
+  const curlExample = `curl -X GET ${webhookUrl} \\
   -H "Content-Type: application/json" \\
   -H "Authorization: ${userData?.authKey || 'YOUR_AUTH_KEY'}" \\
-  -d '${JSON.stringify(examplePayload, null, 2)}'`;
+  -H "package-name: com.example.app"`;
 
-  const jsExample = `fetch('${webhookUrl}', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': '${userData?.authKey || 'YOUR_AUTH_KEY'}'
-  },
-  body: JSON.stringify(${JSON.stringify(examplePayload, null, 2)})
-})
-.then(response => response.json())
-.then(data => console.log(data));`;
-
-  const pythonExample = `import requests
-
-url = "${webhookUrl}"
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": "${userData?.authKey || 'YOUR_AUTH_KEY'}"
-}
-data = ${JSON.stringify(examplePayload, null, 2)}
-
-response = requests.post(url, headers=headers, json=data)
-print(response.json())`;
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -90,7 +62,7 @@ print(response.json())`;
             API Documentation
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Seamlessly integrate PushNotify with your applications using our simple REST API
+            Integrate Snappify effortlessly with your system via a clean REST API
           </p>
         </div>
 
@@ -152,8 +124,8 @@ print(response.json())`;
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold mb-2">POST</div>
-              <p className="text-sm opacity-90">JSON payload required</p>
+              <div className="text-2xl font-bold mb-2">GET</div>
+              <p className="text-sm opacity-90">Header is required</p>
             </CardContent>
           </Card>
         </div>
@@ -205,52 +177,7 @@ print(response.json())`;
             </CardContent>
           </Card>
 
-          {/* Request Format */}
-          <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
-              <CardTitle className="text-2xl flex items-center space-x-3">
-                <Code className="w-6 h-6 text-blue-600" />
-                <span>Request Format</span>
-              </CardTitle>
-              <CardDescription className="text-lg">
-                Send structured JSON data to trigger notifications across your enabled channels
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="space-y-6">
-                <div>
-                  <h4 className="text-xl font-semibold mb-4 text-gray-800">Example Payload</h4>
-                  <div className="relative group">
-                    <pre className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl text-sm overflow-x-auto shadow-inner border-l-4 border-green-400">
-                      {JSON.stringify(examplePayload, null, 2)}
-                    </pre>
-                    <Button
-                      onClick={() => copyToClipboard(JSON.stringify(examplePayload, null, 2), 'Payload')}
-                      variant="secondary"
-                      size="sm"
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      {copied === 'Payload' ? (
-                        <Check className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-l-4 border-blue-400">
-                  <h5 className="font-semibold text-blue-900 mb-3 flex items-center">
-                    <Zap className="w-5 h-5 mr-2" />
-                    Important Note
-                  </h5>
-                  <p className="text-blue-800 leading-relaxed">
-                    Send structured JSON data with a title and data object. The system automatically forwards your payload to all enabled notification channels (Email, Telegram, WhatsApp).
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        
 
           {/* Code Examples */}
           <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
@@ -259,9 +186,7 @@ print(response.json())`;
                 <Code className="w-6 h-6 text-purple-600" />
                 <span>Code Examples</span>
               </CardTitle>
-              <CardDescription className="text-lg">
-                Ready-to-use implementation examples for popular programming languages
-              </CardDescription>
+             
             </CardHeader>
             <CardContent className="p-8">
               <div className="space-y-8">
@@ -288,51 +213,7 @@ print(response.json())`;
                   </pre>
                 </div>
 
-                {/* JavaScript */}
-                <div className="group">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xl font-semibold text-gray-800 flex items-center">
-                      <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-white font-bold text-sm">JS</span>
-                      </div>
-                      JavaScript
-                    </h4>
-                    <Button
-                      onClick={() => copyToClipboard(jsExample, 'JavaScript')}
-                      variant="outline"
-                      size="sm"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      {copied === 'JavaScript' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                  <pre className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl text-sm overflow-x-auto shadow-inner border-l-4 border-yellow-400">
-                    {jsExample}
-                  </pre>
-                </div>
-
-                {/* Python */}
-                <div className="group">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xl font-semibold text-gray-800 flex items-center">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                        <span className="text-white font-bold text-sm">PY</span>
-                      </div>
-                      Python
-                    </h4>
-                    <Button
-                      onClick={() => copyToClipboard(pythonExample, 'Python')}
-                      variant="outline"
-                      size="sm"
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      {copied === 'Python' ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                  <pre className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl text-sm overflow-x-auto shadow-inner border-l-4 border-blue-400">
-                    {pythonExample}
-                  </pre>
-                </div>
+              
               </div>
             </CardContent>
           </Card>
@@ -360,9 +241,9 @@ print(response.json())`;
                   <pre className="bg-gradient-to-r from-gray-900 to-gray-800 text-green-400 p-6 rounded-xl text-sm shadow-inner border-l-4 border-green-400">
 {`{
   "success": true,
-  "message": "Notifications sent successfully",
-  "channels": ["email", "telegram", "whatsapp"],
-  "pointsUsed": 5
+  "data": "{JSON DATA OF REPSONSE}", 
+  "pointsUsed": 1,
+  "balancePoint": 895
 }`}
                   </pre>
                 </div>
@@ -387,24 +268,7 @@ print(response.json())`;
           </Card>
         </div>
 
-        {/* Footer CTA */}
-        <div className="mt-16 text-center">
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-8 text-white shadow-2xl">
-            <h3 className="text-2xl font-bold mb-4">Ready to get started?</h3>
-            <p className="text-lg opacity-90 mb-6">
-              Copy your auth key and start sending notifications to your users instantly
-            </p>
-            <Button 
-              onClick={() => copyToClipboard(userData?.authKey || '', 'Auth Key')}
-              variant="secondary"
-              size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-            >
-              {copied === 'Auth Key' ? <Check className="w-5 h-5 mr-2" /> : <Copy className="w-5 h-5 mr-2" />}
-              Copy Auth Key
-            </Button>
-          </div>
-        </div>
+        
       </div>
     </div>
   );

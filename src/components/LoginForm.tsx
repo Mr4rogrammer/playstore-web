@@ -24,7 +24,7 @@ const LoginForm: React.FC = () => {
       await login(email, password);
       toast({
         title: "Welcome back!",
-        description: "Successfully logged in to PushNotify.",
+        description: "Successfully logged in to Snappify.",
       });
       navigate('/dashboard');
     } catch (error: any) {
@@ -46,7 +46,7 @@ const LoginForm: React.FC = () => {
       await register(email, password, name);
       toast({
         title: "Account created!",
-        description: "Welcome to PushNotify! You've received 10 free points.",
+        description: "Welcome to Snappify! You've received 10 free points.",
       });
       navigate('/dashboard');
     } catch (error: any) {
@@ -79,7 +79,7 @@ const LoginForm: React.FC = () => {
         <div className="flex-1 max-w-2xl pl-8 lg:pl-16">
           <div className="animate-fade-in">
             <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-              Forward API Payloads
+              Forward App Data
               <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-scale-in" style={{ animationDelay: '0.2s' }}>
                 Anywhere You Need
               </span>
@@ -87,8 +87,7 @@ const LoginForm: React.FC = () => {
           </div>
           
           <p className="text-xl text-slate-600 mb-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            PushNotify is a micro-SaaS platform for developers and businesses to forward API payloads 
-            to WhatsApp, Telegram, or Email based on user-defined preferences.
+            Snappify is a micro-SaaS platform for developers and businesses to fetch Play Store app details using the package name — and forward them anywhere via APIs, automation, or webhooks.
           </p>
         </div>
 

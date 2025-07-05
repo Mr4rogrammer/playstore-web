@@ -64,13 +64,13 @@ const Index = () => {
             <div className="animate-fade-in flex items-center justify-center space-x-3 mb-8">
               <Sparkles className="w-12 h-12 text-blue-600" />
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                PushNotify
+                Snappify
               </h1>
             </div>
             
             <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
               <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-                Forward API Payloads
+                Forward App Data
                 <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent animate-scale-in" style={{ animationDelay: '0.5s' }}>
                   Anywhere You Need
                 </span>
@@ -78,8 +78,7 @@ const Index = () => {
             </div>
             
             <p className="text-xl text-slate-600 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-              PushNotify is a micro-SaaS platform for developers and businesses to forward API payloads 
-              to WhatsApp, Telegram, or Email based on user-defined preferences.
+              Snappify is a micro-SaaS platform for developers and businesses to fetch Play Store app details using the package name — and forward them anywhere via APIs, automation, or webhooks.
             </p>
 
             {/* Centered Access Button */}
@@ -120,20 +119,7 @@ const Index = () => {
             ))}
           </div>
 
-          {/* How It Works Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-3xl p-12 max-w-5xl mx-auto backdrop-blur-sm shadow-xl animate-scale-in" style={{ animationDelay: '2s' }}>
-            <div className="flex items-center justify-center mb-6">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-3 rounded-xl">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-            </div>
-            <h3 className="text-3xl font-bold text-slate-800 mb-6">How It Works</h3>
-            <p className="text-slate-700 text-xl leading-relaxed">
-              Configure your preferences once, and PushNotify automatically routes your API payloads 
-              to the right destinations - whether that's WhatsApp for instant alerts, Telegram for team notifications, 
-              or email for formal communications.
-            </p>
-          </div>
+        
         </div>
       </div>
     </div>

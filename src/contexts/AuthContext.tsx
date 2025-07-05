@@ -15,13 +15,7 @@ interface UserData {
   uid?: string;
   name: string;
   email: string;
-  phone: string;
-  telegramChatId: string;
-  notifications: {
-    whatsapp: boolean;
-    telegram: boolean;
-    email: boolean;
-  };
+  totalCalls:number;
   points: number;
   authKey: string;
   authId: string;
@@ -135,14 +129,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       uid: userCredential.user.uid,
       name,
       email,
-      phone: '',
-      telegramChatId: '',
-      notifications: {
-        email: false,
-        telegram: false,
-        whatsapp: false
-      },
-      points: 100,
+      totalCalls: 0,
+      points: 20,
       authKey,
       authId,
       packType: 'none',

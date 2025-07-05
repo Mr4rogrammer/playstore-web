@@ -69,7 +69,7 @@ const Profile: React.FC = () => {
                 </div>
                 <div className="text-center p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
                   <div className="text-2xl font-bold text-purple-600 mb-2">
-                    {userData ? Object.values(userData.notifications).filter(Boolean).length : 0}/3
+                    0
                   </div>
                   <div className="text-sm text-gray-600">Active Channels</div>
                 </div>

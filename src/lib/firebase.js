@@ -4,13 +4,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAbRMvWM8XG8iI9ifs1KwJRaqw_81tw-tY",
-  authDomain: "pushnotify-b5ec3.firebaseapp.com",
-  projectId: "pushnotify-b5ec3",
-  storageBucket: "pushnotify-b5ec3.firebasestorage.app",
-  messagingSenderId: "964805221266",
-  appId: "1:964805221266:web:3aba6327f0ffc3bfe63f4b",
-  measurementId: "G-N4FJS71RRX"
+  apiKey: "AIzaSyD38gjhFwHXXhlV-Yi2Fj42cOWgrjC5SX4",
+  authDomain: "playstore-40de3.firebaseapp.com",
+  projectId: "playstore-40de3",
+  storageBucket: "playstore-40de3.firebasestorage.app",
+  messagingSenderId: "1021319794011",
+  appId: "1:1021319794011:web:e3ab2dffd2636b98b2de7e",
+  measurementId: "G-4JCG2WJ5DF"
 };
 
 const app = initializeApp(firebaseConfig);

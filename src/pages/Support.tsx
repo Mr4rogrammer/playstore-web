@@ -24,31 +24,21 @@ const Support: React.FC = () => {
 
         <Tabs defaultValue="privacy" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="terms">Terms</TabsTrigger>
-            <TabsTrigger value="refund">Refund</TabsTrigger>
+            <TabsTrigger value="privacy">Service Description</TabsTrigger>
+            <TabsTrigger value="terms">User Responsibilities</TabsTrigger>
+            <TabsTrigger value="refund">Service Availability</TabsTrigger>
+             <TabsTrigger value="shipping">Account Termination</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping</TabsTrigger>
+           
           </TabsList>
           
           <TabsContent value="privacy" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Privacy Policy</CardTitle>
-                <CardDescription>How we collect, use, and protect your data</CardDescription>
+                <CardTitle>Service Description</CardTitle>
               </CardHeader>
               <CardContent className="prose max-w-none">
-                <h3>Information We Collect</h3>
-                <p>We collect information you provide when you create an account, including your name, email address, phone number, and Telegram chat ID.</p>
-                
-                <h3>How We Use Your Information</h3>
-                <p>We use your information to provide notification services, process payments, and improve our platform.</p>
-                
-                <h3>Data Security</h3>
-                <p>We use Firebase for secure data storage and authentication. Your data is encrypted and protected.</p>
-                
-                <h3>Contact Information</h3>
-                <p>For privacy-related inquiries, contact us at {contactEmail}</p>
+                <p>Snappify is an API-based service that allows users to fetch Play Store app details using a package name and forward the data to platforms.</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -56,21 +46,10 @@ const Support: React.FC = () => {
           <TabsContent value="terms" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Terms and Conditions</CardTitle>
-                <CardDescription>Terms of service for using PushNotify</CardDescription>
+                <CardTitle>User Responsibilities</CardTitle>
               </CardHeader>
               <CardContent className="prose max-w-none">
-                <h3>Service Description</h3>
-                <p>PushNotify is a notification forwarding service that sends API payloads to WhatsApp, Telegram, or Email.</p>
-                
-                <h3>User Obligations</h3>
-                <p>Users must provide accurate information and use the service responsibly. Abuse or excessive usage may result in account suspension.</p>
-                
-                <h3>Service Availability</h3>
-                <p>We strive for 99% uptime but cannot guarantee uninterrupted service.</p>
-                
-                <h3>Account Termination</h3>
-                <p>We reserve the right to terminate accounts that violate our terms of service.</p>
+                <p>Users must ensure the accuracy of the information they provide and use Snappify in a lawful and responsible manner. Misuse, abuse, or excessive use of the service may result in suspension or restriction of access.</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -78,21 +57,11 @@ const Support: React.FC = () => {
           <TabsContent value="refund" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Cancellation and Refund Policy</CardTitle>
-                <CardDescription>Information about refunds and cancellations</CardDescription>
+                <CardTitle>Service Availability</CardTitle>
               </CardHeader>
               <CardContent className="prose max-w-none">
-                <h3>Refund Eligibility</h3>
-                <p>Refunds are available within 7 days of purchase if the service has not been used.</p>
-                
-                <h3>Non-Refundable Items</h3>
-                <p>Used notification points cannot be refunded. Only unused points are eligible for refund.</p>
-                
-                <h3>Refund Process</h3>
-                <p>To request a refund, contact us at {contactEmail} with your order details.</p>
-                
-                <h3>Processing Time</h3>
-                <p>Refunds are processed within 5-7 business days after approval.</p>
+                <p>We aim to maintain a 99% uptime for Snappify. However, we do not guarantee uninterrupted access and occasional downtime may occur due to maintenance or external factors.
+</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -138,21 +107,12 @@ const Support: React.FC = () => {
           <TabsContent value="shipping" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Shipping and Delivery</CardTitle>
-                <CardDescription>Information about our digital service delivery</CardDescription>
+                <CardTitle>Account Suspension & Termination</CardTitle>
               </CardHeader>
               <CardContent className="prose max-w-none">
-                <h3>Digital Service</h3>
-                <p>PushNotify is a digital service. There are no physical products to ship.</p>
-                
-                <h3>Service Activation</h3>
-                <p>Your notification points are activated immediately after successful payment.</p>
-                
-                <h3>Access</h3>
-                <p>You can access your account and services instantly through our web platform.</p>
-                
-                <h3>Service Delivery</h3>
-                <p>Notifications are delivered in real-time when your webhook is triggered.</p>
+                <p>We reserve the right to suspend or terminate user accounts that violate our terms of service or engage in activities that compromise the integrity or reliability of Snappify.
+
+</p>
               </CardContent>
             </Card>
           </TabsContent>

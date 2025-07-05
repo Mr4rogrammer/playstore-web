@@ -21,8 +21,8 @@ const Pricing: React.FC = () => {
       points: 100,
       costPerPoint: 0.10,
       bestFor: 'Light usage / testing',
-      features: ['100 notification points', 'Telegram support'],
-      channels: ['telegram']
+      features: [''],
+      channels: ['']
     },
     {
       id: 'pro',
@@ -32,9 +32,9 @@ const Pricing: React.FC = () => {
       points: 1000,
       costPerPoint: 0.05,
       bestFor: 'Startups, developers',
-      features: ['1000 notification points', 'Telegram & Email support'],
+      features: [''],
       popular: true,
-      channels: ['telegram', 'email']
+      channels: ['']
     },
     {
       id: 'promax',
@@ -44,8 +44,8 @@ const Pricing: React.FC = () => {
       points: 5000,
       costPerPoint: 0.03,
       bestFor: 'Growing businesses / agencies',
-      features: ['5000 notification points', 'All channels supported'],
-      channels: ['telegram', 'email', 'whatsapp']
+      features: [''],
+      channels: ['']
     }
   ];
 
@@ -58,7 +58,7 @@ const Pricing: React.FC = () => {
         key: 'rzp_live_wLTTqoJwhvOqfA', // Your actual test key
         amount: plan.price * 100, // Amount in paise
         currency: 'INR',
-        name: 'PushNotify',
+        name: 'Snappify',
         description: `${plan.name} - ${plan.points} Points`,
         handler: function (response: any) {
           // Payment successful
@@ -160,7 +160,7 @@ const Pricing: React.FC = () => {
             Choose Your Plan
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
-            Select the perfect plan for your notification needs. Each plan includes different channel access.
+            Select the perfect plan for your needs. Each plan includes different pricing.
           </p>
           {userData?.packType && userData.packType !== 'none' && (
             <div className="mt-4 inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
@@ -207,15 +207,6 @@ const Pricing: React.FC = () => {
               </CardHeader>
               
               <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700 text-sm sm:text-base">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
                 <Button 
                   onClick={() => handlePurchase(plan)}
                   disabled={loading === plan.id || userData?.packType === plan.id}
@@ -244,31 +235,7 @@ const Pricing: React.FC = () => {
             </CardHeader>
             <CardContent>
               <p className="text-blue-800 mb-4 text-sm sm:text-base">
-                Each notification uses points per webhook call. Points are deducted based on enabled channels:
-              </p>
-              <div className={`grid grid-cols-1 ${isMobile ? 'gap-3' : 'md:grid-cols-3 gap-4'} text-center`}>
-                <div className="bg-white p-3 sm:p-4 rounded-lg">
-                  <div className="text-xl sm:text-2xl mb-2">✈️</div>
-                  <div className="font-medium text-sm sm:text-base">Telegram</div>
-                  <div className="text-blue-600 font-bold text-sm sm:text-base">1 point</div>
-                </div>
-                <div className="bg-white p-3 sm:p-4 rounded-lg">
-                  <div className="text-xl sm:text-2xl mb-2">📧</div>
-                  <div className="font-medium text-sm sm:text-base">Email</div>
-                  <div className="text-blue-600 font-bold text-sm sm:text-base">2 points</div>
-                </div>
-                <div className="bg-white p-3 sm:p-4 rounded-lg">
-                  <div className="text-xl sm:text-2xl mb-2">📱</div>
-                  <div className="font-medium text-sm sm:text-base">WhatsApp</div>
-                  <div className="text-blue-600 font-bold text-sm sm:text-base">2 points</div>
-                </div>
-              </div>
-              <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
-                <p className="text-yellow-800 text-xs sm:text-sm">
-                  <strong>Example:</strong> If all 3 channels are enabled, each webhook call uses 5 points (1+2+2). 
-                  If only Telegram is enabled, each call uses 1 point.
-                </p>
-              </div>
+Each API call consumes 1 point per app metadata fetch.              </p>
             </CardContent>
           </Card>
         </div>

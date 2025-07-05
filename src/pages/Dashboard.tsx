@@ -18,160 +18,13 @@ const Dashboard: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [authKeyCopied, setAuthKeyCopied] = useState(false);
   const [showAuthKey, setShowAuthKey] = useState(false);
-  const [formData, setFormData] = useState({
-    phone: '',
-    telegramChatId: '',
-    notifications: {
-      email: false,
-      telegram: false,
-      whatsapp: false,
-    }
-  });
-
-  // Sync formData with userData whenever userData changes
-  useEffect(() => {
-    if (userData) {
-      setFormData({
-        phone: userData.phone || '',
-        telegramChatId: userData.telegramChatId || '',
-        notifications: {
-          email: userData.notifications?.email || false,
-          telegram: userData.notifications?.telegram || false,
-          whatsapp: userData.notifications?.whatsapp || false,
-        }
-      });
-    }
-  }, [userData]);
 
   // Show blocked account screen if user is blocked
   if (userData?.status === 'blocked') {
     return <BlockedAccount />;
   }
 
-  const webhookUrl = "https://automation.mrprogrammer.info/webhook/pushNotify";
-
-  const getAvailableChannels = () => {
-    const packType = userData?.packType || 'none';
-    switch (packType) {
-      case 'mini':
-        return ['telegram'];
-      case 'pro':
-        return ['telegram', 'email'];
-      case 'promax':
-        return ['telegram', 'email', 'whatsapp'];
-      case 'none':
-      default:
-        return ['telegram']; // Telegram is available for free/none pack users
-    }
-  };
-
-  const availableChannels = getAvailableChannels();
-
-  const handleSave = async (field: 'phone' | 'telegramChatId') => {
-    // Validate required fields only when saving
-    if (field === 'telegramChatId' && !formData.telegramChatId.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter your Telegram Chat ID to save.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (field === 'telegramChatId') {
-      setTelegramLoading(true);
-    } else {
-      setWhatsappLoading(true);
-    }
-    
-    try {
-      await updateUserData({
-        [field]: formData[field],
-        notifications: formData.notifications
-      });
-      
-      toast({
-        title: "Settings saved successfully! ✅",
-        description: `Your ${field === 'phone' ? 'WhatsApp' : 'Telegram'} settings have been updated.`,
-        variant: "success",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error saving preferences",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-    
-    if (field === 'telegramChatId') {
-      setTelegramLoading(false);
-    } else {
-      setWhatsappLoading(false);
-    }
-  };
-
-  const handleNotificationToggle = async (channel: keyof typeof formData.notifications) => {
-    // Show under development message for email and WhatsApp
-    if (channel === 'email' || channel === 'whatsapp') {
-      toast({
-        title: "🚧 Under Development",
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications are currently under development and will be available soon!`,
-        variant: "info",
-      });
-      return;
-    }
-
-    // Check if channel is available in current plan
-    if (!availableChannels.includes(channel)) {
-      toast({
-        title: "Channel not available ⚠️",
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} is not available in your current plan. Please upgrade to access this channel.`,
-        variant: "warning",
-      });
-      return;
-    }
-
-    const newValue = !formData.notifications[channel];
-    
-    const newNotifications = {
-      ...formData.notifications,
-      [channel]: newValue
-    };
-    
-    // Update local state first
-    setFormData(prev => ({
-      ...prev,
-      notifications: newNotifications
-    }));
-
-    try {
-      // Update in database
-      await updateUserData({
-        notifications: newNotifications
-      });
-      
-      toast({
-        title: `${newValue ? '🎉 Channel enabled!' : 'Channel disabled'}`,
-        description: `${channel.charAt(0).toUpperCase() + channel.slice(1)} notifications ${newValue ? 'enabled' : 'disabled'}.${newValue && channel === 'telegram' ? ' Please add your Telegram Chat ID below.' : ''}`,
-        variant: newValue ? "success" : "info",
-      });
-    } catch (error: any) {
-      // Revert the change if update fails
-      setFormData(prev => ({
-        ...prev,
-        notifications: {
-          ...prev.notifications,
-          [channel]: !newValue // Revert to previous state
-        }
-      }));
-      
-      toast({
-        title: "Error updating setting",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
+  const webhookUrl = "https://automation.mrprogrammer.info/webhook/snappify";
 
   const copyToClipboard = async (text: string, type: 'webhook' | 'authkey') => {
     try {
@@ -265,7 +118,8 @@ const Dashboard: React.FC = () => {
             </span>
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Manage your notification channels and configure your webhook settings with ease
+Manage your package lookups and configure your API endpoints with ease.
+
           </p>
         </div>
 
@@ -284,7 +138,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <div className="text-3xl font-bold mb-2">{userData?.points || 0}</div>
               <p className="text-sm opacity-90">
-                Credits for sending notifications
+                Credits for fetching data
               </p>
             </CardContent>
           </Card>
@@ -314,15 +168,15 @@ const Dashboard: React.FC = () => {
                 <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
                   🔔
                 </div>
-                Active Channels
+                Number Of Calls
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold mb-2">
-                {userData ? Object.values(userData.notifications).filter(Boolean).length : 0}
+              {userData ? Object.values(userData.totalCalls.toString()) : 0}
               </div>
               <p className="text-sm opacity-90">
-                Notification channels enabled
+                API calls done
               </p>
             </CardContent>
           </Card>
@@ -338,7 +192,7 @@ const Dashboard: React.FC = () => {
               Your Webhook URL
             </CardTitle>
             <CardDescription className="text-base">
-              Use this endpoint to send notifications through your enabled channels
+              Use this endpoint to fetch app information using packagename.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
@@ -434,238 +288,7 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Enhanced Notification Channels */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-slate-50 to-purple-50 border-b">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">📱</span>
-              </div>
-              Notification Channels
-            </CardTitle>
-            <CardDescription className="text-base">
-              Configure your preferred notification methods based on your plan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {/* Telegram Section */}
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 ${
-                availableChannels.includes('telegram') 
-                  ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 hover:border-blue-300 hover:shadow-md' 
-                  : 'bg-gray-100 border-gray-200'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-2xl">
-                    ✈️
-                  </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      Telegram Notifications
-                      {!availableChannels.includes('telegram') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('telegram') 
-                        ? 'Instant notifications via Telegram bot' 
-                        : 'Available in all plans'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.telegram}
-                  onCheckedChange={() => handleNotificationToggle('telegram')}
-                  disabled={!availableChannels.includes('telegram')}
-                  className="data-[state=checked]:bg-blue-500"
-                />
-              </div>
-              
-              {/* Show Telegram Chat ID input only when telegram is enabled */}
-              {formData.notifications.telegram && availableChannels.includes('telegram') && (
-                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-blue-200 shadow-sm animate-fade-in">
-                  <div className="space-y-4">
-                    <Label htmlFor="telegram" className="text-sm font-semibold text-gray-700">
-                      Telegram Chat ID *
-                    </Label>
-                    
-                    {/* Help note for finding Chat ID */}
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="flex items-start gap-3">
-                        <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                        <div className="text-sm text-blue-800">
-                          <p className="font-medium mb-2">How to set up Telegram notifications:</p>
-                          <ol className="list-decimal list-inside space-y-1 text-blue-700">
-                            <li>Open Telegram and search for <strong>@userinfobot</strong></li>
-                            <li>Start a chat with the bot by clicking "Start"</li>
-                            <li>The bot will send you your Chat ID (it's a number)</li>
-                            <li>Next, search for <strong>@MrPushNotifybot</strong> and subscribe to it</li>
-                            <li>Copy and paste your Chat ID number here</li>
-                          </ol>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-3">
-                      <Input
-                        id="telegram"
-                        type="text"
-                        placeholder="Enter your Telegram Chat ID"
-                        value={formData.telegramChatId}
-                        onChange={(e) => setFormData(prev => ({ ...prev, telegramChatId: e.target.value }))}
-                        className="flex-1 border-2 focus:border-blue-400 transition-colors"
-                        required
-                      />
-                      <Button 
-                        onClick={() => handleSave('telegramChatId')} 
-                        size="sm"
-                        disabled={telegramLoading || !formData.telegramChatId.trim()}
-                        className="bg-blue-600 hover:bg-blue-700 font-medium px-6"
-                      >
-                        {telegramLoading ? 'Saving...' : 'Save'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Email Section */}
-            <div className="space-y-4 relative">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
-                availableChannels.includes('email') 
-                  ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:border-purple-300 hover:shadow-md blur-[1px]' 
-                  : 'bg-gray-100 border-gray-200 blur-[1px]'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-2xl">
-                    📧
-                  </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      Email Notifications
-                      {!availableChannels.includes('email') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('email') 
-                        ? `Receive notifications at ${userData?.email}` 
-                        : 'Available in Pro and Pro Max plans'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.email}
-                  onCheckedChange={() => handleNotificationToggle('email')}
-                  disabled={!availableChannels.includes('email')}
-                  className="data-[state=checked]:bg-purple-500"
-                />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg">
-                  <span className="text-purple-700 font-semibold text-sm flex items-center gap-2">
-                    🚧 Under Development
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* WhatsApp Section */}
-            <div className="space-y-4 relative">
-              <div className={`flex items-center justify-between p-6 rounded-xl border-2 transition-all duration-300 relative ${
-                availableChannels.includes('whatsapp') 
-                  ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:border-green-300 hover:shadow-md blur-[1px]' 
-                  : 'bg-gray-100 border-gray-200 blur-[1px]'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-2xl">
-                    📱
-                  </div>
-                  <div>
-                    <div className="font-semibold text-lg flex items-center gap-2">
-                      WhatsApp Notifications
-                      {!availableChannels.includes('whatsapp') && (
-                        <Lock className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {availableChannels.includes('whatsapp') 
-                        ? 'Receive notifications via WhatsApp' 
-                        : 'Available in Pro Max plan only'
-                      }
-                    </div>
-                  </div>
-                </div>
-                <Switch
-                  checked={formData.notifications.whatsapp}
-                  onCheckedChange={() => handleNotificationToggle('whatsapp')}
-                  disabled={!availableChannels.includes('whatsapp')}
-                  className="data-[state=checked]:bg-green-500"
-                />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-green-200 shadow-lg">
-                  <span className="text-green-700 font-semibold text-sm flex items-center gap-2">
-                    🚧 Under Development
-                  </span>
-                </div>
-              </div>
-              
-              {formData.notifications.whatsapp && availableChannels.includes('whatsapp') && (
-                <div className="ml-4 p-5 bg-white rounded-xl border-2 border-green-200 shadow-sm animate-fade-in">
-                  <div className="space-y-4">
-                    <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
-                      Phone Number (with country code) *
-                    </Label>
-                    <div className="flex space-x-3">
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1234567890"
-                        value={formData.phone}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        className="flex-1 border-2 focus:border-green-400 transition-colors"
-                        required
-                      />
-                      <Button 
-                        onClick={() => handleSave('phone')} 
-                        size="sm"
-                        disabled={whatsappLoading || !formData.phone.trim()}
-                        className="bg-green-600 hover:bg-green-700 font-medium px-6"
-                      >
-                        {whatsappLoading ? 'Saving...' : 'Save'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {(userData?.packType === 'none' || !userData?.packType) && (
-              <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl">
-                <div className="flex items-center gap-3 text-yellow-800 font-semibold mb-3">
-                  <div className="w-8 h-8 bg-yellow-200 rounded-lg flex items-center justify-center">
-                    <Lock className="w-5 h-5" />
-                  </div>
-                  Free Plan - Limited Access
-                </div>
-                <p className="text-yellow-700 mb-4 leading-relaxed">
-                  You're currently on the free plan with Telegram access. Upgrade to unlock Email and WhatsApp channels with advanced features.
-                </p>
-                <Button 
-                  onClick={() => window.location.href = '/pricing'}
-                  className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 font-medium"
-                >
-                  <Crown className="w-4 h-4 mr-2" />
-                  Upgrade Your Plan
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        
       </div>
     </div>
   );
